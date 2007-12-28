@@ -82,4 +82,6 @@ public:
 	CEdit m_sampleRate;
 public:
 	CEdit m_resolution;
+public:
+	afx_msg void OnBnClickedStop();
 };

@@ -126,6 +126,7 @@ BEGIN_MESSAGE_MAP(CPlaybackLibClientDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON9, &CPlaybackLibClientDlg::OnBnClickedUpdateSyncEvery)
 	ON_BN_CLICKED(IDC_BUTTON7, &CPlaybackLibClientDlg::OnBnClickedCancelOp)
 	ON_LBN_SELCHANGE(IDC_LIST1, &CPlaybackLibClientDlg::OnLbnSelchangeOperationsList)
+	ON_BN_CLICKED(IDC_BUTTON1, &CPlaybackLibClientDlg::OnBnClickedStop)
 END_MESSAGE_MAP()
 
 
@@ -193,6 +194,8 @@ BOOL CPlaybackLibClientDlg::OnInitDialog()
 	m_recordFilename.SetWindowText ( "Test.csv" );
 	m_sampleRate.SetWindowText ( "25" );
 	m_resolution.SetWindowText ( "0.0" );
+
+	recordOperation= NULL;
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -309,8 +312,8 @@ void CPlaybackLibClientDlg::OnBnClickedStartRecord()
 void CPlaybackLibClientDlg::OnBnClickedStartPlayback()
 {
 	// TODO: Add your control notification handler code here
-	int order= m_splineOrder.GetCurSel ( );
-	if ( order == -1 ) { order= 3; }
+	int order= m_splineOrder.GetCurSel ( ) + 1;
+	if ( order == 0 ) { order= 3; }
 
 	char filename[256];
 	m_playbackFilename.GetWindowText ( filename, 256 );
@@ -350,4 +353,14 @@ void CPlaybackLibClientDlg::OnLbnSelchangeOperationsList()
 
 	// Index of operation last selected from list
 	m_selectedOperation= curSel;
+}
+
+void CPlaybackLibClientDlg::OnBnClickedStop()
+{
+	// TODO: Add your control notification handler code here
+	if ( recordOperation != NULL )
+	{
+		recordOperation->Cancel ();
+		//delete recordOperation;
+	}
 }
