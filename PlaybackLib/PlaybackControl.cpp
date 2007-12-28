@@ -6,6 +6,7 @@ CPlaybackControl::CPlaybackControl(void)
 {
 	// Singleton device observer for this controller
 	m_playbackDevice= NULL;
+	m_pidParamsChanged= false;
 }
 
 CPlaybackControl::~CPlaybackControl(void)
@@ -15,6 +16,17 @@ CPlaybackControl::~CPlaybackControl(void)
 	{
 		delete m_playbackDevice;
 	}
+}
+
+// Has pid parameters changed since last sync
+void CPlaybackControl::SetPIDParamsChanged ( bool changed )
+{
+	m_pidParamsChanged= changed;
+}
+
+bool CPlaybackControl::IsPIDParamsChanged ( )
+{
+	return m_pidParamsChanged;
 }
 
 // Create a new device object that is controlled by this control object
@@ -27,6 +39,19 @@ CPlaybackDevice* CPlaybackControl::GetPlaybackDevice ( )
 	}
 
 	return m_playbackDevice;
+}
+
+// Set PID parameters
+void CPlaybackControl::SetPIDParameters ( CPIDControlParameters* param )
+{
+	m_pidParams= *param;
+	SetPIDParamsChanged ( true );
+}
+
+// Get PID parameters
+CPIDControlParameters* CPlaybackControl::GetPIDParameters ( )
+{
+	return &m_pidParams;
 }
 
 // Add a new operation to the queue

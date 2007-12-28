@@ -2,6 +2,7 @@
 //#include "PlaybackControl.h"
 #include "Operation.h"
 #include "PID/pid.h"
+#include "PIDControlParameters.h"
 #include <vector>
 
 #ifdef PB_IMPORT
@@ -33,11 +34,17 @@ public:
 
 protected:
 
+	// Initialise PID controllers
+	void InitPIDControllers ( );
+
 	// Advance to next operation
 	void AdvanceOperation ( );
 
 	// Update fps calculation
 	void UpdateFrameRate ( );
+
+	// PID Control parameter
+	CPIDControlParameters m_pidParams;
 
 	// Average frame rate
 	double m_fps;

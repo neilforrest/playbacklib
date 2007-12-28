@@ -1,10 +1,30 @@
 #pragma once
 
-class CPIDControlParameters
+#ifdef PB_IMPORT
+#define PB_API __declspec(dllimport)
+#else
+#define PB_API __declspec(dllexport)
+#endif
+
+class PB_API CPIDControlParameters
 {
 public:
 	CPIDControlParameters(void);
 	virtual ~CPIDControlParameters(void);
+
+	// Some preset values
+	// ..................
+
+	// PHANToM Omni
+	void SetDevicePhantomOmni ( );
+
+	// PHANToM Premium
+	void SetDevicePhantomPremium ( );
+
+	// ..................
+
+	// Assignment operator
+	CPIDControlParameters operator = ( CPIDControlParameters p );
 
 	double m_p;
 	double m_i;
