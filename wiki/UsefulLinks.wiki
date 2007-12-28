@@ -1,13 +1,10 @@
 #summary Some useful links.
 
-= Here are some links that I found useful while working on the PlaybackLibrary =
+= Here are some links =
 
-Add your content here.
+I found all these resources very helpful whilst working on the Playback Lib, specifically links relating to b-splines, about which I knew very little.
 
+Thanks to all the authors.
 
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Applet: B-Spline curves
+http://www.cs.technion.ac.il/~cs234325/Applets/applets/bspline/GermanApplet.html
