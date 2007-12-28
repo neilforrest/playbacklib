@@ -1,0 +1,218 @@
+#include "StdAfx.h"
+#include "PlaybackDevice.h"
+#include "PlaybackControl.h"
+#include <mmsystem.h>
+
+// Default PID control parameters
+static const double p = 0.3;
+static const double i = 0.0;
+static const double d = 15.0;
+static const double f = 0.09;
+static const double out_filter = 0.2;
+static const double gain = 0.3;
+static const double sat_low = -5.0;
+static const double sat_high = 5.0;
+static const double dead_zone = 0.0;
+
+CPlaybackDevice::CPlaybackDevice( CPlaybackControl* subject )
+{
+	playbackControl= subject;
+
+	// Initialise controllers
+	control_x= init_state(p, i, d, f, out_filter, gain, dead_zone, sat_low, sat_high);
+	control_y= init_state(p, i, d, f, out_filter, gain, dead_zone,sat_low, sat_high);
+	control_z= init_state(p, i, d, f, out_filter, gain, dead_zone,sat_low, sat_high);
+
+	// Controller state is initially in reset state
+	m_resetControllerState= true;
+
+	// Initialise fps
+	m_fps= 0;
+	
+	// Counter at time of last frame
+	m_lastFrameCounter.QuadPart= 0;
+
+	// Number of frames since last check
+	m_frameCount= 0;
+
+	QueryPerformanceFrequency((LARGE_INTEGER*)&m_freq);
+	
+// Output debugging information to the specified file
+#ifdef PLAYBACK_DEVICE_DEBUG
+	m_debugFile= fopen ( PLAYBACK_DEVICE_DEBUG, "w" );
+#endif
+}
+
+CPlaybackDevice::~CPlaybackDevice(void)
+{
+#ifdef PLAYBACK_DEVICE_DEBUG
+	fclose ( m_debugFile );
+#endif
+}
+
+// Get average frame rate
+double CPlaybackDevice::GetFramesPerSecond ( )
+{
+	return m_fps;
+}
+
+// Advance to next operation
+void CPlaybackDevice::AdvanceOperation ( )
+{
+	// Add operation to completed list
+	COperation* finnishedOp= m_operations.at ( 0 ); // Save pointer for later
+	m_finishedOperations.push_back ( m_operations.at ( 0 ) );
+
+	// Shift others up
+	m_operations.erase ( m_operations.begin ( ) );
+
+	// If an operation remains in the queue
+	if ( m_operations.size () > 0 )
+	{
+		// If it's a move to point operation
+		if ( m_operations.at ( 0 )->m_type == COperation::MoveToPoint )
+		{
+			// Get the last operations last set point
+			double point[3];
+			((CMoveToPointOp*)finnishedOp)->GetLastSetPoint ( point );
+
+			// Hand the last set point to the move to operation to use as source point
+			((CMoveToPointOp*)m_operations.at ( 0 ))->SetLastSetPoint ( point );				
+		}
+	}
+}
+
+// Update fps calculation
+void CPlaybackDevice::UpdateFrameRate ( )
+{
+	// Calculate frame rate
+	LARGE_INTEGER current;
+	QueryPerformanceCounter((LARGE_INTEGER*)&current);
+
+	if ( (double)(current.QuadPart - m_lastFrameCounter.QuadPart) / (double)m_freq.QuadPart > 1.0 )
+	{
+		m_fps= m_frameCount;
+		m_frameCount= 0;
+
+		QueryPerformanceCounter((LARGE_INTEGER*)&m_lastFrameCounter);
+	}
+
+	m_frameCount++;
+}
+
+// Get playback controller force
+void CPlaybackDevice::GetForce ( double* force, double* position )
+{
+	// Update fps calculation
+	UpdateFrameRate ( );
+
+	// Zero forces
+	force[0]= 0.0; force[1]= 0.0; force[2]= 0.0;
+
+	// While top most operation is completed, advance queue
+	while ( m_operations.size () != 0 )
+	{
+		// Current operation
+		COperation* operation= m_operations.at ( 0 );
+
+		// Check that operation is not finished
+		if ( operation->m_state == operation->Cancelled ||		// Cancelled
+			 operation->m_state == operation->Error ||			// Error
+			 operation->m_state == operation->Completed )		// Finished
+		{
+			AdvanceOperation ( );
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// If an operation remains, process it
+	if ( m_operations.size () != 0 )
+	{
+		COperation* operation= m_operations.at ( 0 );
+
+		// Branch on type of operation
+		operation->GetForce ( force, position, control_x, control_y, control_z );
+
+		// Need to reset controller state if we become idle
+		m_resetControllerState= false;
+
+#ifdef PLAYBACK_DEVICE_DEBUG
+	fprintf ( m_debugFile, "%f, %f, %f, %s\n", force[0], force[1], force[2], operation->ToString ().c_str() );
+#endif
+	}
+	else
+	{
+		// No operation, no continuous control, so reset controller state
+		if ( !m_resetControllerState )
+		{
+			// Reset controllers
+			reset_state ( control_x );
+			reset_state ( control_y );
+			reset_state ( control_z );
+
+			m_resetControllerState= true;
+		}
+
+#ifdef PLAYBACK_DEVICE_DEBUG
+		fprintf ( m_debugFile, "%f, %f, %f, No Operation\n", force[0], force[1], force[2] );
+#endif
+	}
+}
+
+// Syncronise with subject (CPlaybackControl)
+void CPlaybackDevice::Syncronise ( )
+{
+	// Operations added since last sync
+	std::vector<COperation*>* addedOperations= playbackControl->GetAddedOperations ( );
+
+	// Controllers copy of operations queue
+	std::vector<COperation*>* controlQueue= playbackControl->GetOperations ( );
+
+	// Update status of all operations in the client queue
+
+	// Update finished operations
+	for ( unsigned int i= 0; i < m_finishedOperations.size ( ); i++ )
+	{
+		// Deep copy device version to control version to update status
+		*(controlQueue->at ( 0 ))= *(m_finishedOperations.at ( i ));
+
+		// Delete device version
+		delete m_finishedOperations.at ( i );
+
+		// Remove from client queue (but don't delete)
+		controlQueue->erase ( controlQueue->begin () );
+	}
+
+	// Clear finished operations (all deleted)
+	m_finishedOperations.clear ();
+
+	// Update queued operations
+	for ( unsigned int i= 0; i < m_operations.size (); i++ )
+	{
+		if ( (controlQueue->at ( i ))->m_userCancel )
+		{
+			m_operations.at ( i )->m_state= COperation::Cancelled;
+		}
+
+		// Deep copy device version to control version
+		*(controlQueue->at ( i ))= *(m_operations.at ( i ));
+	}
+
+	// Add new operations to queues
+	for ( unsigned int i= 0; i < addedOperations->size (); i++ )
+	{
+		controlQueue->push_back ( addedOperations->at ( i ) );	// control copy
+
+		// Create and add device copy
+		COperation* op= addedOperations->at ( i )->Clone ( );
+
+		m_operations.push_back ( op );	// device copy
+		//MessageBox ( 0, "Added new operation.", "", MB_OK );
+	}
+
+	// Clear added operations
+	addedOperations->clear ();
+}
