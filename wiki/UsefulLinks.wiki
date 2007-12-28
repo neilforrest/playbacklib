@@ -6,6 +6,11 @@ I found all these resources very helpful whilst working on the Playback Lib, spe
 
 Thanks to all the authors.
 
+*Andrew Crossan's original playback library*
+
+http://www.dcs.gla.ac.uk/~ac/pidlib.html
+
+
 *I nice little Java Applet that lets you play with b-splines*
 
 http://www.cs.technion.ac.il/~cs234325/Applets/applets/bspline/GermanApplet.html
