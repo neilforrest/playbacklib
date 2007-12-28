@@ -4,6 +4,7 @@
 #include "RecordOp.h"
 #include "PlaybackOp.h"
 #include "PlaybackDevice.h"
+#include "PIDControlParameters.h"
 #include <vector>
 
 #ifdef PB_IMPORT
@@ -42,7 +43,21 @@ public:
 	// Get newley added operations
 	std::vector<COperation*>* GetAddedOperations ( );
 
+	// Set PID parameters
+	void SetPIDParameters ( CPIDControlParameters* param );
+
+	// Get PID parameters
+	CPIDControlParameters* GetPIDParameters ( );
+
+	// Has pid parameters changed since last sync
+	void SetPIDParamsChanged ( bool changed );
+	bool IsPIDParamsChanged ( );
+
 protected:
+
+	// PID Control Parameters
+	CPIDControlParameters m_pidParams;
+	bool m_pidParamsChanged;
 
 	// Singleton device observer for this controller
 	CPlaybackDevice* m_playbackDevice;

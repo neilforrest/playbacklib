@@ -3,25 +3,12 @@
 #include "PlaybackControl.h"
 #include <mmsystem.h>
 
-// Default PID control parameters
-static const double p = 0.3;
-static const double i = 0.0;
-static const double d = 15.0;
-static const double f = 0.09;
-static const double out_filter = 0.2;
-static const double gain = 0.3;
-static const double sat_low = -5.0;
-static const double sat_high = 5.0;
-static const double dead_zone = 0.0;
-
 CPlaybackDevice::CPlaybackDevice( CPlaybackControl* subject )
 {
 	playbackControl= subject;
 
 	// Initialise controllers
-	control_x= init_state(p, i, d, f, out_filter, gain, dead_zone, sat_low, sat_high);
-	control_y= init_state(p, i, d, f, out_filter, gain, dead_zone,sat_low, sat_high);
-	control_z= init_state(p, i, d, f, out_filter, gain, dead_zone,sat_low, sat_high);
+	InitPIDControllers ( );
 
 	// Controller state is initially in reset state
 	m_resetControllerState= true;
@@ -48,6 +35,20 @@ CPlaybackDevice::~CPlaybackDevice(void)
 #ifdef PLAYBACK_DEVICE_DEBUG
 	fclose ( m_debugFile );
 #endif
+}
+
+// Initialise PID controllers
+void CPlaybackDevice::InitPIDControllers ( )
+{
+	control_x= init_state(m_pidParams.m_p, m_pidParams.m_i, m_pidParams.m_d, m_pidParams.m_f, 
+		                  m_pidParams.m_out_filter, m_pidParams.m_gain, m_pidParams.m_dead_zone, m_pidParams.m_sat_low,
+						  m_pidParams.m_sat_high);
+	control_y= init_state(m_pidParams.m_p, m_pidParams.m_i, m_pidParams.m_d, m_pidParams.m_f, 
+		                  m_pidParams.m_out_filter, m_pidParams.m_gain, m_pidParams.m_dead_zone, m_pidParams.m_sat_low,
+						  m_pidParams.m_sat_high);
+	control_z= init_state(m_pidParams.m_p, m_pidParams.m_i, m_pidParams.m_d, m_pidParams.m_f, 
+		                  m_pidParams.m_out_filter, m_pidParams.m_gain, m_pidParams.m_dead_zone, m_pidParams.m_sat_low,
+						  m_pidParams.m_sat_high);
 }
 
 // Get average frame rate
@@ -165,6 +166,20 @@ void CPlaybackDevice::GetForce ( double* force, double* position )
 // Syncronise with subject (CPlaybackControl)
 void CPlaybackDevice::Syncronise ( )
 {
+	// If need be, re-create playback controllers with new settings
+	if ( playbackControl->IsPIDParamsChanged () )
+	{
+		m_pidParams= *( playbackControl->GetPIDParameters () );
+
+		PIDClean ( control_x );
+		PIDClean ( control_y );
+		PIDClean ( control_z );
+
+		InitPIDControllers ();
+		
+		playbackControl->SetPIDParamsChanged ( false );
+	}
+
 	// Operations added since last sync
 	std::vector<COperation*>* addedOperations= playbackControl->GetAddedOperations ( );
 
