@@ -84,4 +84,6 @@ public:
 	CEdit m_resolution;
 public:
 	afx_msg void OnBnClickedStop();
+public:
+	afx_msg void OnBnClickedOk();
 };
