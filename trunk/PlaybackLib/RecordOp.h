@@ -38,6 +38,9 @@ public:
 	void GetForce ( double* force, double* position, 
 					control_state* control_x, control_state* control_y, control_state* control_z );
 
+	// Delete this operation after it's finnished
+	void Delete ( );
+
 	// Debugging: Return string representation of operation
 	std::string ToString ( );
 

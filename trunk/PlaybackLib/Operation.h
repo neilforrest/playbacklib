@@ -1,5 +1,6 @@
 #pragma once
 #include "pid/pid.h"
+#include "Garbage.h"
 #include <string>
 
 #ifdef PB_IMPORT
@@ -8,7 +9,7 @@
 #define PB_API __declspec(dllexport)
 #endif
 
-class PB_API COperation
+class PB_API COperation : public CGarbage
 {
 public:
 

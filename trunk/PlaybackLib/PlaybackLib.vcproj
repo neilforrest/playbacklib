@@ -5,10 +5,6 @@
 	Name="PlaybackLib"
 	ProjectGUID="{3B2A8A89-B708-44A0-B0C3-02468F0B90D3}"
 	RootNamespace="PlaybackLib"
-	SccProjectName="SAK"
-	SccAuxPath="SAK"
-	SccLocalPath="SAK"
-	SccProvider="SAK"
 	Keyword="MFCDLLProj"
 	>
 	<Platforms>
@@ -194,6 +190,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Garbage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GarbageCollector.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MoveToPointOp.cpp"
 				>
 			</File>
@@ -273,6 +277,14 @@
 			>
 			<File
 				RelativePath=".\BSpline.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Garbage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GarbageCollector.h"
 				>
 			</File>
 			<File
