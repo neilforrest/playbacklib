@@ -127,6 +127,7 @@ BEGIN_MESSAGE_MAP(CPlaybackLibClientDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON7, &CPlaybackLibClientDlg::OnBnClickedCancelOp)
 	ON_LBN_SELCHANGE(IDC_LIST1, &CPlaybackLibClientDlg::OnLbnSelchangeOperationsList)
 	ON_BN_CLICKED(IDC_BUTTON1, &CPlaybackLibClientDlg::OnBnClickedStop)
+	ON_BN_CLICKED(IDOK, &CPlaybackLibClientDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -257,9 +258,6 @@ void CPlaybackLibClientDlg::OnBnClickedToPoint()
 
 void CPlaybackLibClientDlg::OnClose()
 {
-	// TODO: Add your message handler code here and/or call default
-	hdStopScheduler ( );
-
 	CDialog::OnClose();
 }
 
@@ -307,6 +305,7 @@ void CPlaybackLibClientDlg::OnBnClickedStartRecord()
 	StringToFloat ( resolution, &resolutionFloat );
 
 	recordOperation= playbackControl->AddRecordOp ( filename, (double)sampleRateFloat, (double)resolutionFloat );
+	recordOperation->AddReference ();
 }
 
 void CPlaybackLibClientDlg::OnBnClickedStartPlayback()
@@ -361,6 +360,17 @@ void CPlaybackLibClientDlg::OnBnClickedStop()
 	if ( recordOperation != NULL )
 	{
 		recordOperation->Cancel ();
-		//delete recordOperation;
+		recordOperation->RemoveReference ();	// Remove our reference to operation
 	}
+}
+
+void CPlaybackLibClientDlg::OnBnClickedOk()
+{
+	// TODO: Add your message handler code here and/or call default
+	hdStopScheduler ( );
+
+	delete playbackControl;
+//	delete playbackDevice;
+
+	OnOK();
 }
