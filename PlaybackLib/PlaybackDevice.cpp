@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "PlaybackDevice.h"
 #include "PlaybackControl.h"
+#include "GarbageCollector.h"
 #include <mmsystem.h>
 
 CPlaybackDevice::CPlaybackDevice( CPlaybackControl* subject )
@@ -197,7 +198,10 @@ void CPlaybackDevice::Syncronise ( )
 		// Delete device version
 		delete m_finishedOperations.at ( i );
 
-		// Remove from client queue (but don't delete)
+		// Remove our reference to client operation
+		controlQueue->at ( 0 )->RemoveReference  ();
+
+		// Remove from client queue
 		controlQueue->erase ( controlQueue->begin () );
 	}
 
@@ -221,13 +225,18 @@ void CPlaybackDevice::Syncronise ( )
 	{
 		controlQueue->push_back ( addedOperations->at ( i ) );	// control copy
 
+		// Add our refernce to the client operation
+		addedOperations->at(i)->AddReference ();
+
 		// Create and add device copy
 		COperation* op= addedOperations->at ( i )->Clone ( );
 
 		m_operations.push_back ( op );	// device copy
-		//MessageBox ( 0, "Added new operation.", "", MB_OK );
 	}
 
 	// Clear added operations
 	addedOperations->clear ();
+
+	// Collect up old client side operations
+	CGarbageCollector::GetInstance ()->Collect ( );
 }

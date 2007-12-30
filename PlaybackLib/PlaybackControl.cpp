@@ -94,7 +94,7 @@ CRecordOp* CPlaybackControl::AddRecordOp ( char* filename, double sampleRate, do
 CPlaybackOp* CPlaybackControl::AddPlaybackOp ( char* filename, int bSplineOrder )
 {
 	CPlaybackOp* op= new CPlaybackOp  ( filename, bSplineOrder );
-	op->SetHoldAtEnd ( true );
+
 	AddOperation ( op );
 
 	return op;
