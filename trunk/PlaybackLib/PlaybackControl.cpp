@@ -66,9 +66,6 @@ void CPlaybackControl::AddOperation ( COperation* op )
 CMoveToPointOp* CPlaybackControl::AddMoveToPointOp ( double x, double y, double z, double speed )
 {
 	CMoveToPointOp* op= new CMoveToPointOp ( x, y, z, speed );
-
-	op->SetHoldAtEnd ( true );
-
 	AddOperation ( op );
 
 	return op;

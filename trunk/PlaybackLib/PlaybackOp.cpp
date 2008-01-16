@@ -383,7 +383,6 @@ void CPlaybackOp::GetForce ( double* force, double* position,
 				// Clamp range and continue
 				m_holdingAtEnd= true;
 				m_progress= range;
-				//break; // while loop
 			}
 			else
 			{
