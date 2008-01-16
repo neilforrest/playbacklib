@@ -4,6 +4,8 @@
 #include "GarbageCollector.h"
 #include <mmsystem.h>
 
+using namespace PlaybackLib;
+
 CPlaybackDevice::CPlaybackDevice( CPlaybackControl* subject )
 {
 	playbackControl= subject;
@@ -122,6 +124,7 @@ void CPlaybackDevice::GetForce ( double* force, double* position )
 			 operation->m_state == operation->Error ||			// Error
 			 operation->m_state == operation->Completed )		// Finished
 		{
+			OutputDebugString ( "Advance" );
 			AdvanceOperation ( );
 		}
 		else
@@ -167,6 +170,8 @@ void CPlaybackDevice::GetForce ( double* force, double* position )
 // Syncronise with subject (CPlaybackControl)
 void CPlaybackDevice::Syncronise ( )
 {
+	OutputDebugString ( "CPlaybackDevice::Syncronise ( )\n" );
+
 	// If need be, re-create playback controllers with new settings
 	if ( playbackControl->IsPIDParamsChanged () )
 	{
@@ -193,7 +198,8 @@ void CPlaybackDevice::Syncronise ( )
 	for ( unsigned int i= 0; i < m_finishedOperations.size ( ); i++ )
 	{
 		// Deep copy device version to control version to update status
-		*(controlQueue->at ( 0 ))= *(m_finishedOperations.at ( i ));
+		//*(controlQueue->at ( 0 ))= *(m_finishedOperations.at ( i ));
+		controlQueue->at(0)->Copy ( m_finishedOperations.at ( i ) );
 
 		// Delete device version
 		delete m_finishedOperations.at ( i );
@@ -217,7 +223,8 @@ void CPlaybackDevice::Syncronise ( )
 		}
 
 		// Deep copy device version to control version
-		*(controlQueue->at ( i ))= *(m_operations.at ( i ));
+		//*(controlQueue->at ( i ))= *(m_operations.at ( i )); // FIX THIS
+		controlQueue->at(i)->Copy ( m_operations.at ( i ) );
 	}
 
 	// Add new operations to queues

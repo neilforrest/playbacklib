@@ -2,6 +2,8 @@
 #include "PlaybackOp.h"
 #include <math.h>
 
+using namespace PlaybackLib;
+
 CPlaybackOp::CPlaybackOp( char* filename, int bSplineOrder )
 {
 	m_inFile= NULL;
@@ -141,38 +143,36 @@ bool CPlaybackOp::IsHoldingAtEnd ( )
 	return m_holdingAtEnd;
 }
 
-// Deep copy operator
-CPlaybackOp CPlaybackOp::operator = ( CPlaybackOp op )
+void CPlaybackOp::Copy ( COperation* op )
 {
-	if ( &op == this ) return *this;
-
 	// Call super class operator
-	COperation::operator=(op);
+	COperation::Copy(op);
 
-	m_inFile= op.m_inFile;
-	m_firstTime= op.m_firstTime;
+	CPlaybackOp* subOp= (CPlaybackOp*)op;
+
+	m_inFile= subOp->m_inFile;
+	m_firstTime= subOp->m_firstTime;
 
 	// Start time
-	m_startCount= op.m_startCount;
-	m_freq= op.m_freq;
+	m_startCount= subOp->m_startCount;
+	m_freq= subOp->m_freq;
 
 	// Current bead position
-	m_beadPos[0]= op.m_beadPos[0];
-	m_beadPos[1]= op.m_beadPos[1];
-	m_beadPos[2]= op.m_beadPos[2];
+	m_beadPos[0]= subOp->m_beadPos[0];
+	m_beadPos[1]= subOp->m_beadPos[1];
+	m_beadPos[2]= subOp->m_beadPos[2];
 
-	m_tolerance= op.m_tolerance;
-	m_useTolerance= op.m_useTolerance;
-	m_speed= op.m_speed;
+	m_tolerance= subOp->m_tolerance;
+	m_useTolerance= subOp->m_useTolerance;
+	m_speed= subOp->m_speed;
 
-	m_bSplineOrder= op.m_bSplineOrder;
-	m_bSplineSize= op.m_bSplineSize;
+	m_bSplineOrder= subOp->m_bSplineOrder;
+	m_bSplineSize= subOp->m_bSplineSize;
 
-	m_holdAtEnd= op.m_holdAtEnd;
-	m_holdingAtEnd= op.m_holdingAtEnd;
-
-	return *this;
+	m_holdAtEnd= subOp->m_holdAtEnd;
+	m_holdingAtEnd= subOp->m_holdingAtEnd;
 }
+
 
 // Create a new object of this type
 COperation* CPlaybackOp::Clone ( )
@@ -186,7 +186,7 @@ COperation* CPlaybackOp::Clone ( )
 
 // Get playback controller force
 void CPlaybackOp::GetForce ( double* force, double* position, 
-				             control_state* control_x, control_state* control_y, control_state* control_z )
+				             ctrl_state* control_x, ctrl_state* control_y, ctrl_state* control_z )
 {
 	bool eof, error;
 
@@ -290,97 +290,100 @@ void CPlaybackOp::GetForce ( double* force, double* position,
 		// List of control points in current spline
 		std::vector<CPlaybackNode>* controlPoints= m_bSpline->GetControlPoints ();
 
-		while ( m_nextControlPoint < controlPoints->size () && controlPoints->at ( m_nextControlPoint ).m_time <= elapsed - m_totalPauseDuration )
+		while ( controlPoints->at ( m_nextControlPoint ).m_time / m_speed <= elapsed - m_totalPauseDuration )
 		{
-			m_nextControlPoint++;
-		}
-
-		if ( m_nextControlPoint >= controlPoints->size () )
-		{
-			m_nextControlPoint= controlPoints->size ()-1;
-		}
-
-		// Time since start or passing last control point
-		double timeSinceStart= (elapsed - m_totalPauseDuration) - 
-							    controlPoints->at ( m_nextControlPoint - 1 ).m_time;
-
-		// Total time gap between control points
-		double totalTimeGap= controlPoints->at ( m_nextControlPoint ).m_time - 
-						     controlPoints->at ( m_nextControlPoint - 1 ).m_time;
-
-		// Desired fraction complete
-		double complete= timeSinceStart / totalTimeGap;
-
-		if ( complete < 0 )
-		{
-			complete= 0.0;
-		}
-		else if ( complete > 1 )
-		{
-			complete= 1.0;
-		}
-
-		// Desired progress through spline
-		m_progress= m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint-1 ) +
-					complete * ( m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint ) -
-								 m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint-1 ) );
-
-		// If we're over half way through current b-spline
-		if ( !m_endOfWaypoints && m_progress > range / 2.0 )
-		{
-			// Get next waypoint from file
-			eof= false; error= false;
-			CPlaybackNode *n= new CPlaybackNode ();
-			n->GetNode ( m_inFile, &eof, &error );	// Read from file
-
-			// Check for errors
-			if ( eof )
+			// Clamp to end of b-spline, new ctrl points are loaded when we reach the
+			// halfway point, so if we get the the end of the spline, it's because we're at end of playback
+			if ( m_nextControlPoint >= controlPoints->size () )
 			{
-				// End of file, last waypoint has been added
-				m_endOfWaypoints= true;
+				m_nextControlPoint= controlPoints->size ()-1;
 			}
 
-			if ( error )
+			// Time since start or passing last control point
+			double timeSinceStart= (elapsed - m_totalPauseDuration) - 
+									controlPoints->at ( m_nextControlPoint - 1 ).m_time / m_speed;
+
+			// Total time gap between control points
+			double totalTimeGap= controlPoints->at ( m_nextControlPoint ).m_time / m_speed - 
+								 controlPoints->at ( m_nextControlPoint - 1 ).m_time / m_speed;
+
+			// Desired fraction complete
+			double complete= timeSinceStart / totalTimeGap;
+
+			if ( complete < 0 )
 			{
-				m_state= Error;
+				complete= 0.0;
+			}
+			else if ( complete > 1 )
+			{
+				complete= 1.0;
+			}
+
+			// Desired progress through spline
+			m_progress= m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint-1 ) +
+						complete * ( m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint ) -
+									 m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint-1 ) );
+
+			// If we're over half way through current b-spline
+			if ( !m_endOfWaypoints && m_progress > range / 2.0 )
+			{
+				// Get next waypoint from file
+				eof= false; error= false;
+				CPlaybackNode *n= new CPlaybackNode ();
+				n->GetNode ( m_inFile, &eof, &error );	// Read from file
+
+				// Check for errors
+				if ( eof )
+				{
+					// End of file, last waypoint has been added
+					m_endOfWaypoints= true;
+				}
+
+				if ( error )
+				{
+					m_state= Error;
+					delete n;
+					return;
+				}
+
+				// Add to waypoint to b-spline
+				if ( !eof )
+				{
+					// At next waypoint at end and remove first waypoint from start
+					m_bSpline->RemoveFirstControlPoint ( );	// Remove first
+
+					m_bSpline->AddControlPoint ( *n );
+
+					// Curve has moved forwards, decrement progress to maintain position
+					m_progress-= 1.0;
+					m_nextControlPoint-= 1;
+				}
+
+				// Delete temp storage
 				delete n;
-				return;
 			}
 
-			// Add to waypoint to b-spline
-			if ( !eof )
+			// Check if we've reached the end of the b-spline
+			if ( m_progress >= range )
 			{
-				// At next waypoint at end and remove first waypoint from start
-				m_bSpline->RemoveFirstControlPoint ( );	// Remove first
-
-				m_bSpline->AddControlPoint ( *n );
-
-				// Curve has moved forwards, decrement progress to maintain position
-				m_progress-= 1.0;
-				m_nextControlPoint-= 1;
+				if ( m_holdAtEnd )
+				{
+					// Clamp range and continue
+					m_holdingAtEnd= true;
+					m_progress= range;
+					break; // while loop
+				}
+				else
+				{
+					// Reached end of b-spline, playback completed
+					m_state= Completed;
+					return;
+				}
 			}
 
-			// Delete temp storage
-			delete n;
-		}
-
-		// Check if we've reached the end of the b-spline
-		if ( m_progress >= range )
-		{
-			if ( m_holdAtEnd )
-			{
-				// Clamp range and continue
-				m_holdingAtEnd= true;
-				m_progress= range;
-			}
-			else
-			{
-				// Reached end of b-spline, playback completed
-				m_state= Completed;
-				return;
-			}
-		}
-	} // end if (!m_paused && !m_holdingAtEnd)
+			m_nextControlPoint++;
+		} // end while
+	}
 
 	// Get point at m_progress along b-spline
 	m_bSpline->GetPoint ( m_progress, &m_beadNode );

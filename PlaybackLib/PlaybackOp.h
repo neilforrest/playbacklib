@@ -12,154 +12,158 @@
 // For debugging, output actual interpolated playback path to the specified filename
 //#define PLAYBACK_OP_RECORD_PATH		"PlaybackOpPath.csv"
 
-// Max line length of input file
-static const int maxLineLength= 256;
-
-// Operation to playback a previously recorded gesture
-class PB_API CPlaybackOp : public COperation
+namespace PlaybackLib
 {
-public:
 
-	// Create a new playback operation
-	CPlaybackOp( char* filename,
-				 int bSplineOrder= 3 
-			   );
+	// Max line length of input file
+	static const int maxLineLength= 256;
 
-	// Destroy playback operation
-	virtual ~CPlaybackOp(void);
+	// Operation to playback a previously recorded gesture
+	class PB_API CPlaybackOp : public COperation
+	{
+	public:
 
-	// For continuity it's sometimes needed to know the last set point / bead position
-	void GetLastSetPoint ( double* point );
+		// Create a new playback operation
+		CPlaybackOp( char* filename,
+					 int bSplineOrder= 3 
+				   );
 
-	// Playback Settings (Adjust _before_ operation begins)
-	// .................
+		// Destroy playback operation
+		virtual ~CPlaybackOp(void);
 
-	// B-Spline Order
-	void SetBSplineOrder ( int order );
-	int GetBSplineOrder ( );
+		// For continuity it's sometimes needed to know the last set point / bead position
+		void GetLastSetPoint ( double* point );
 
-	// Playback Speed, (1 == Recorded Speed, 2 == 2 * Recorded Speed, etc)
-	void SetPlaybackSpeed ( double speed );
-	double GetPlaybackSpeed ( );
+		// Playback Settings (Adjust _before_ operation begins)
+		// .................
 
-	// Turn on/off pause of playback if user falls behind playback by more than tolerance
-	void SetPauseIfResisting ( bool pause );
-	bool IsPauseIfResisting ( );
+		// B-Spline Order
+		void SetBSplineOrder ( int order );
+		int GetBSplineOrder ( );
 
-	// Set tolerance used to pause playback if user resists motion
-	void SetPauseIfResistingTolerance ( double tol );
-	double GetPauseIfResistingTolerance ( );
+		// Playback Speed, (1 == Recorded Speed, 2 == 2 * Recorded Speed, etc)
+		void SetPlaybackSpeed ( double speed );
+		double GetPlaybackSpeed ( );
 
-	// Hold the user at the end of the playback trajectory and wait for cancel
-	void SetHoldAtEnd ( bool hold );
-	bool IsHoldAtEnd ( );
+		// Turn on/off pause of playback if user falls behind playback by more than tolerance
+		void SetPauseIfResisting ( bool pause );
+		bool IsPauseIfResisting ( );
 
-	// .................
+		// Set tolerance used to pause playback if user resists motion
+		void SetPauseIfResistingTolerance ( double tol );
+		double GetPauseIfResistingTolerance ( );
 
-	// Is currently holding user at end of playback, waiting for cancel
-	bool IsHoldingAtEnd ( );
+		// Hold the user at the end of the playback trajectory and wait for cancel
+		void SetHoldAtEnd ( bool hold );
+		bool IsHoldAtEnd ( );
 
-	// Deep copy operator
-	CPlaybackOp operator = ( CPlaybackOp op );
+		// .................
 
-	// Create a new object of this type
-	COperation* Clone ( );
+		// Is currently holding user at end of playback, waiting for cancel
+		bool IsHoldingAtEnd ( );
 
-	// Get playback controller force
-	void GetForce ( double* force, double* position, 
-					control_state* control_x, control_state* control_y, control_state* control_z );
+		// Deep copy operator
+		void Copy ( COperation* op );
 
-	// Debugging: Return string representation of operation
-	std::string ToString ( );
+		// Create a new object of this type
+		COperation* Clone ( );
 
-protected:
+		// Get playback controller force
+		void GetForce ( double* force, double* position, 
+						ctrl_state* control_x, ctrl_state* control_y, ctrl_state* control_z );
 
-	// Begin a pause in playback
-	void StartPause ();
+		// Debugging: Return string representation of operation
+		std::string ToString ( );
 
-	// End the current pause in playback
-	void EndPause ();
+	protected:
 
-	// Current interpolated playback position
-	CPlaybackNode m_beadNode;
+		// Begin a pause in playback
+		void StartPause ();
 
-	// Order of b-spline interpolation
-	int m_bSplineOrder;
+		// End the current pause in playback
+		void EndPause ();
 
-	// Time amount of time it should take to get from m_beadPos to next waypoint
-	double m_dt;
+		// Current interpolated playback position
+		CPlaybackNode m_beadNode;
 
-	// Advance to next waypoint?
-	bool m_advance;
+		// Order of b-spline interpolation
+		int m_bSplineOrder;
 
-	// Current point to interpolate from
-	double m_fromPoint[3];
+		// Time amount of time it should take to get from m_beadPos to next waypoint
+		double m_dt;
 
-	// Playback file handle
-	FILE* m_inFile;
+		// Advance to next waypoint?
+		bool m_advance;
 
-	// Input filename
-	CString m_inFilename;
+		// Current point to interpolate from
+		double m_fromPoint[3];
 
-	// Start time
-	LARGE_INTEGER m_startCount;
+		// Playback file handle
+		FILE* m_inFile;
 
-	// Last frame time
-	LARGE_INTEGER m_lastFrameCount;
+		// Input filename
+		CString m_inFilename;
 
-	// Performance counter frequency
-	LARGE_INTEGER m_freq;
+		// Start time
+		LARGE_INTEGER m_startCount;
 
-	// Do first time initialisation?
-	bool m_firstTime;
+		// Last frame time
+		LARGE_INTEGER m_lastFrameCount;
 
-	// Current bead position
-	double m_beadPos[3];
+		// Performance counter frequency
+		LARGE_INTEGER m_freq;
 
-	// Advance to next bead tolerance
-	double m_tolerance;
-	bool m_useTolerance;
+		// Do first time initialisation?
+		bool m_firstTime;
 
-	// Speed of playback, 1 == record speed
-	double m_speed;
+		// Current bead position
+		double m_beadPos[3];
 
-	// Index of the next control point to pass
-	int m_nextControlPoint;
+		// Advance to next bead tolerance
+		double m_tolerance;
+		bool m_useTolerance;
 
-	// Time of passing the last control point
-	LARGE_INTEGER m_lastCtrlPointPassed;
+		// Speed of playback, 1 == record speed
+		double m_speed;
 
-	// BSpline of playback nodes
-	CBSpline<CPlaybackNode>* m_bSpline;
+		// Index of the next control point to pass
+		int m_nextControlPoint;
 
-	// Number of nodes to use in b-spline at one time
-	int m_bSplineSize;
+		// Time of passing the last control point
+		LARGE_INTEGER m_lastCtrlPointPassed;
 
-	double m_progress;
+		// BSpline of playback nodes
+		CBSpline<CPlaybackNode>* m_bSpline;
 
-	double m_time;
+		// Number of nodes to use in b-spline at one time
+		int m_bSplineSize;
 
-	// The last waypoint has been added
-	bool m_endOfWaypoints;
+		double m_progress;
 
-	// The playback is currently paused
-	bool m_paused;
+		double m_time;
 
-	// Counter at last pause start time
-	LARGE_INTEGER m_pauseStartCount;
+		// The last waypoint has been added
+		bool m_endOfWaypoints;
 
-	// Total duration that playback has been paused for
-	double m_totalPauseDuration;
+		// The playback is currently paused
+		bool m_paused;
 
-	// Should hold at end of playback and wait for user to cancel
-	bool m_holdAtEnd;
+		// Counter at last pause start time
+		LARGE_INTEGER m_pauseStartCount;
 
-	// Currently olding at end of playback
-	bool m_holdingAtEnd;
+		// Total duration that playback has been paused for
+		double m_totalPauseDuration;
 
-#ifdef PLAYBACK_OP_RECORD_PATH
-	// For debugging, output actual interpolated playback path to the specified filename
-	FILE* m_outFile;
-#endif
+		// Should hold at end of playback and wait for user to cancel
+		bool m_holdAtEnd;
 
-};
+		// Currently olding at end of playback
+		bool m_holdingAtEnd;
+
+	#ifdef PLAYBACK_OP_RECORD_PATH
+		// For debugging, output actual interpolated playback path to the specified filename
+		FILE* m_outFile;
+	#endif
+
+	};
+}

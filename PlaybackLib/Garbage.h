@@ -6,22 +6,25 @@
 #define PB_API __declspec(dllexport)
 #endif
 
-
-// An object under the control of a CGarbageCollector
-class PB_API CGarbage
+namespace PlaybackLib
 {
-public:
-	CGarbage(void);
-	virtual ~CGarbage(void);
 
-	// Add a reference to this object
-	void AddReference ( );
+	// An object under the control of a CGarbageCollector
+	class PB_API CGarbage
+	{
+	public:
+		CGarbage(void);
+		virtual ~CGarbage(void);
 
-	// Remove reference to this object
-	void RemoveReference ( );
+		// Add a reference to this object
+		void AddReference ( );
 
-protected:
+		// Remove reference to this object
+		void RemoveReference ( );
 
-	// Number of references to this object
-	int m_referenceCount;
-};
+	protected:
+
+		// Number of references to this object
+		int m_referenceCount;
+	};
+}

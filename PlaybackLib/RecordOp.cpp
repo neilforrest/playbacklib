@@ -2,6 +2,8 @@
 #include "RecordOp.h"
 #include <math.h>
 
+using namespace PlaybackLib;
+
 CRecordOp::CRecordOp( char* filename, double sampleRate, double resolution )
 {
 	// Open output file later
@@ -44,25 +46,22 @@ void CRecordOp::GetLastSetPoint ( double* point )
 	// Irrelevant for record op
 }
 
-// Deep copy operator
-CRecordOp CRecordOp::operator = ( CRecordOp op )
+void CRecordOp::Copy ( COperation* op )
 {
-	if ( &op == this ) return *this;
-
 	// Call super class operator
-	COperation::operator=(op);
+	COperation::Copy(op);
 
-	m_outFile= op.m_outFile;
-	m_sampleRate= op.m_sampleRate;
-	m_firstTime= op.m_firstTime;
+	CRecordOp* subOp= (CRecordOp*)op;
+
+	m_outFile= subOp->m_outFile;
+	m_sampleRate= subOp->m_sampleRate;
+	m_firstTime= subOp->m_firstTime;
 
 	// Start time
-	m_startCount= op.m_startCount;
-	m_freq= op.m_freq;
+	m_startCount= subOp->m_startCount;
+	m_freq= subOp->m_freq;
 
-	m_resolution= op.m_resolution;
-
-	return *this;
+	m_resolution= subOp->m_resolution;
 }
 
 // Create a new object of this type
@@ -77,7 +76,7 @@ COperation* CRecordOp::Clone ( )
 
 // Get playback controller force
 void CRecordOp::GetForce ( double* force, double* position, 
-				           control_state* control_x, control_state* control_y, control_state* control_z )
+				           ctrl_state* control_x, ctrl_state* control_y, ctrl_state* control_z )
 {
 	// Do first time initialisation
 	if ( m_firstTime )

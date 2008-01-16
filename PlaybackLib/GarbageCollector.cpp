@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "GarbageCollector.h"
 
+using namespace PlaybackLib;
+
 // Protected constructor
 CGarbageCollector::CGarbageCollector(void)
 {

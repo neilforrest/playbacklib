@@ -14,67 +14,71 @@
 // Output debugging information to the specified file
 //#define PLAYBACK_DEVICE_DEBUG	"PlaybackDeviceDebug.csv"
 
-// Forward declare
-class CPlaybackControl;
-
-class PB_API CPlaybackDevice
+namespace PlaybackLib
 {
-public:
-	CPlaybackDevice( CPlaybackControl* subject );
-	virtual ~CPlaybackDevice(void);
 
-	// Get playback controller force
-	void GetForce ( double* force, double* position );
+	// Forward declare
+	class CPlaybackControl;
 
-	// Syncronise with subject (CPlaybackControl)
-	void Syncronise ( );
+	class PB_API CPlaybackDevice
+	{
+	public:
+		CPlaybackDevice( CPlaybackControl* subject );
+		virtual ~CPlaybackDevice(void);
 
-	// Get average frame rate
-	double GetFramesPerSecond ( );
+		// Get playback controller force
+		void GetForce ( double* force, double* position );
 
-protected:
+		// Syncronise with subject (CPlaybackControl)
+		void Syncronise ( );
 
-	// Initialise PID controllers
-	void InitPIDControllers ( );
+		// Get average frame rate
+		double GetFramesPerSecond ( );
 
-	// Advance to next operation
-	void AdvanceOperation ( );
+	protected:
 
-	// Update fps calculation
-	void UpdateFrameRate ( );
+		// Initialise PID controllers
+		void InitPIDControllers ( );
 
-	// PID Control parameter
-	CPIDControlParameters m_pidParams;
+		// Advance to next operation
+		void AdvanceOperation ( );
 
-	// Average frame rate
-	double m_fps;
+		// Update fps calculation
+		void UpdateFrameRate ( );
 
-	// Counter at time of last frame check
-	LARGE_INTEGER m_lastFrameCounter;
-	LARGE_INTEGER m_freq;
+		// PID Control parameter
+		CPIDControlParameters m_pidParams;
 
-	// Number of frames since last check
-	int m_frameCount;
+		// Average frame rate
+		double m_fps;
 
-	// Operations that have been processed since last sync
-	std::vector<COperation*> m_finishedOperations;
+		// Counter at time of last frame check
+		LARGE_INTEGER m_lastFrameCounter;
+		LARGE_INTEGER m_freq;
 
-	// Ptr to Subject (CPlaybackControl)
-	CPlaybackControl* playbackControl;
+		// Number of frames since last check
+		int m_frameCount;
 
-	// Queue of operations
-	std::vector<COperation*> m_operations;
+		// Operations that have been processed since last sync
+		std::vector<COperation*> m_finishedOperations;
 
-	// PID Controllers
-	control_state *control_x, *control_y, *control_z;
+		// Ptr to Subject (CPlaybackControl)
+		CPlaybackControl* playbackControl;
 
-	// PID Controller Parameters
+		// Queue of operations
+		std::vector<COperation*> m_operations;
 
-	// Record that controller state has been reset
-	bool m_resetControllerState;
+		// PID Controllers
+		ctrl_state *control_x, *control_y, *control_z;
 
-// Output debugging information to the specified file
-#ifdef PLAYBACK_DEVICE_DEBUG
-	FILE* m_debugFile;
-#endif
-};
+		// PID Controller Parameters
+
+		// Record that controller state has been reset
+		bool m_resetControllerState;
+
+	// Output debugging information to the specified file
+	#ifdef PLAYBACK_DEVICE_DEBUG
+		FILE* m_debugFile;
+	#endif
+	};
+}

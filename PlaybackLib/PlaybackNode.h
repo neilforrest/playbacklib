@@ -1,41 +1,45 @@
 #pragma once
 
-class CPlaybackNode
+namespace PlaybackLib
 {
-public:
-	CPlaybackNode(void);
-	virtual ~CPlaybackNode(void);
 
-	// Assignment Operator
-	CPlaybackNode operator= ( CPlaybackNode a );
+	class CPlaybackNode
+	{
+	public:
+		CPlaybackNode(void);
+		virtual ~CPlaybackNode(void);
 
-	CPlaybackNode operator= ( double a ); // Used to zero the node to (0, 0, 0 )
+		// Assignment Operator
+		CPlaybackNode operator= ( CPlaybackNode a );
 
-	// Equals Operator
-	bool operator== ( CPlaybackNode a );
+		CPlaybackNode operator= ( double a ); // Used to zero the node to (0, 0, 0 )
 
-	// Addition operator
-	CPlaybackNode operator + ( CPlaybackNode a );
+		// Equals Operator
+		bool operator== ( CPlaybackNode a );
 
-	CPlaybackNode operator - ( CPlaybackNode a );
+		// Addition operator
+		CPlaybackNode operator + ( CPlaybackNode a );
 
-	// Scalar multiply operator
-	CPlaybackNode operator * ( double a );
+		CPlaybackNode operator - ( CPlaybackNode a );
 
-	CPlaybackNode operator / ( double a );
+		// Scalar multiply operator
+		CPlaybackNode operator * ( double a );
 
-	// Get string representation
-	CString ToString ( );
+		CPlaybackNode operator / ( double a );
 
-	// Populate from string representation
-	bool FromString ( CString str );
+		// Get string representation
+		CString ToString ( );
 
-	// Get next playback node from file
-	void GetNode ( FILE* f, bool* eof, bool* error );
+		// Populate from string representation
+		bool FromString ( CString str );
 
-	// Position space
-	double m_space[3];
+		// Get next playback node from file
+		void GetNode ( FILE* f, bool* eof, bool* error );
 
-	// Position time
-	double m_time;
-};
+		// Position space
+		double m_space[3];
+
+		// Position time
+		double m_time;
+	};
+}

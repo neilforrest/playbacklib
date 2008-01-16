@@ -13,58 +13,62 @@
 #define PB_API __declspec(dllexport)
 #endif
 
-class PB_API CPlaybackControl
+namespace PlaybackLib
 {
-public:
-	CPlaybackControl(void);
-	virtual ~CPlaybackControl(void);
 
-	// Add a new operation to the queue
-	void AddOperation ( COperation* op );
+	class PB_API CPlaybackControl
+	{
+	public:
+		CPlaybackControl(void);
+		virtual ~CPlaybackControl(void);
 
-	// Create and add a move to point operation to the queue
-	CMoveToPointOp* AddMoveToPointOp ( double x, double y, double z, double speed );
+		// Add a new operation to the queue
+		void AddOperation ( COperation* op );
 
-	// Create and add a move to point operation to the queue
-	CMoveToPointOp* AddMoveToPointOp ( char* filename, double speed );
+		// Create and add a move to point operation to the queue
+		CMoveToPointOp* AddMoveToPointOp ( double x, double y, double z, double speed );
 
-	// Create and add a record operation to the queue
-	CRecordOp* AddRecordOp ( char* filename, double sampleRate, double resolution );
+		// Create and add a move to point operation to the queue
+		CMoveToPointOp* AddMoveToPointOp ( char* filename, double speed );
 
-	// Create and add a playback operation to the queue
-	CPlaybackOp* AddPlaybackOp ( char* filename, int bSplineOrder= 3 );
+		// Create and add a record operation to the queue
+		CRecordOp* AddRecordOp ( char* filename, double sampleRate, double resolution );
 
-	// Create a new device object that is controlled by this control object
-	CPlaybackDevice* GetPlaybackDevice ( );
+		// Create and add a playback operation to the queue
+		CPlaybackOp* AddPlaybackOp ( char* filename, int bSplineOrder= 3 );
 
-	// Get queue of operations
-	std::vector<COperation*>* GetOperations ( );
+		// Create a new device object that is controlled by this control object
+		CPlaybackDevice* GetPlaybackDevice ( );
 
-	// Get newley added operations
-	std::vector<COperation*>* GetAddedOperations ( );
+		// Get queue of operations
+		std::vector<COperation*>* GetOperations ( );
 
-	// Set PID parameters
-	void SetPIDParameters ( CPIDControlParameters* param );
+		// Get newley added operations
+		std::vector<COperation*>* GetAddedOperations ( );
 
-	// Get PID parameters
-	CPIDControlParameters* GetPIDParameters ( );
+		// Set PID parameters
+		void SetPIDParameters ( CPIDControlParameters* param );
 
-	// Has pid parameters changed since last sync
-	void SetPIDParamsChanged ( bool changed );
-	bool IsPIDParamsChanged ( );
+		// Get PID parameters
+		CPIDControlParameters* GetPIDParameters ( );
 
-protected:
+		// Has pid parameters changed since last sync
+		void SetPIDParamsChanged ( bool changed );
+		bool IsPIDParamsChanged ( );
 
-	// PID Control Parameters
-	CPIDControlParameters m_pidParams;
-	bool m_pidParamsChanged;
+	protected:
 
-	// Singleton device observer for this controller
-	CPlaybackDevice* m_playbackDevice;
+		// PID Control Parameters
+		CPIDControlParameters m_pidParams;
+		bool m_pidParamsChanged;
 
-	// Queue of operations
-	std::vector<COperation*> m_operationQueue;
+		// Singleton device observer for this controller
+		CPlaybackDevice* m_playbackDevice;
 
-	// Newley added operations
-	std::vector<COperation*> m_addedOperations;
-};
+		// Queue of operations
+		std::vector<COperation*> m_operationQueue;
+
+		// Newley added operations
+		std::vector<COperation*> m_addedOperations;
+	};
+}
