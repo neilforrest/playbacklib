@@ -2,6 +2,8 @@
 #include "Garbage.h"
 #include "GarbageCollector.h"
 
+using namespace PlaybackLib;
+
 CGarbage::CGarbage(void)
 {
 	// Number of references to this object

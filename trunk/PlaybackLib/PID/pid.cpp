@@ -27,6 +27,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+using namespace PlaybackLib;
 
 /* Initialize a new PID controller 
 
@@ -39,15 +40,15 @@ gain: overall gain
 sat_low: minimum saturation point
 sat_high: maximum_saturation point
 */
-control_state *init_state(double p, double i, double d, double f, 
+ctrl_state *PlaybackLib::init_state(double p, double i, double d, double f, 
 						  double out_filter, double gain, 
 						  double dead_zone, double sat_low, double sat_high)
 {
-  control_state *state;
-  state = (control_state *)calloc(sizeof(*state), 1);
+  ctrl_state *state;
+  state = (ctrl_state *)calloc(sizeof(*state), 1);
   state->last_action = 0;
   state->p = state->i = state->d = state->filter = 0;
-    state->soft_saturate = 0;
+	state->soft_saturate = 0;
   state->soft_saturate_scale = 1.0;
   state->x = state->target_x = 0;
   state->sat_low = sat_low;
@@ -75,40 +76,40 @@ control_state *init_state(double p, double i, double d, double f,
 }
 
 
-void set_integrator_kill(control_state *state, double kill)
+void PlaybackLib::set_integrator_kill(ctrl_state *state, double kill)
 {
 
 		state->integrator_kill = kill;
 }
 
 
-void set_input_filter(control_state *state, double f)
+void PlaybackLib::set_input_filter(ctrl_state *state, double f)
 {
 
 	state->input_filter = f;
 }
 
 /* Limit the change in control values to max_change */
-void set_rate_limiter(control_state *state, double max_change)
+void PlaybackLib::set_rate_limiter(ctrl_state *state, double max_change)
 {
 	state->max_change = max_change;
 
 }
 
 /* Set PID controller DC offset */
-void set_dc(control_state *state, double dc)
+void PlaybackLib::set_dc(ctrl_state *state, double dc)
 {
-        state->offset = dc;
+		state->offset = dc;
 }
 
 /* Clip a value to a given range */
-double clip(double x, double a, double b)
+double PlaybackLib::clip(double x, double a, double b)
 {
-        if(x<a)
-                x=a;
-        if(x>b)
-                x=b;
-        return x;
+		if(x<a)
+				x=a;
+		if(x>b)
+				x=b;
+		return x;
 }
 
 /* Limits the integrator. 
@@ -116,7 +117,7 @@ I is multiplied by decay each time step
 When integrator reaches max_decay, 
 it is multiplied by max_decay instead
 */
-void set_integrator_decay(control_state *state, double max, double decay, double max_decay)
+void PlaybackLib::set_integrator_decay(ctrl_state *state, double max, double decay, double max_decay)
 {
 	state->max_integrator = max;
 	state->integrator_decay = decay;
@@ -124,7 +125,7 @@ void set_integrator_decay(control_state *state, double max, double decay, double
 }
 
 /* Do PID control */
-double control(control_state *state, double x, double target)
+double PlaybackLib::control(ctrl_state *state, double x, double target)
 {
   double  filter, action;
 
@@ -192,7 +193,7 @@ double control(control_state *state, double x, double target)
 
 
 /* Enable soft saturation with given scale; disables if scale = 0 */
-void set_soft_saturation(control_state *state, double scale)
+void PlaybackLib::set_soft_saturation(ctrl_state *state, double scale)
 {
 	if(scale==0)
 		state->soft_saturate = 0;
@@ -204,7 +205,7 @@ void set_soft_saturation(control_state *state, double scale)
 }
 
 
-void reset_state(control_state *state)
+void PlaybackLib::reset_state(ctrl_state *state)
 {
 	state->i = 0;
 	state->d = 0;
@@ -215,7 +216,7 @@ void reset_state(control_state *state)
 }
 
 // Clean up memory
-void PIDClean (control_state *state)
+void PlaybackLib::PIDClean (ctrl_state *state)
 {
 	free ( state );
 }

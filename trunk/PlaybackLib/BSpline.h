@@ -1,85 +1,91 @@
 #pragma once
 #include <vector>
 
-template <typename T>
-class CBSpline
+namespace PlaybackLib
 {
-public:
-	CBSpline(void);
-	virtual ~CBSpline(void);
 
-	// Order of curve
-	void SetOrder ( int order );
-	int GetOrder ( );
+	template <typename T>
+	class CBSpline
+	{
+	public:
+		CBSpline(void);
+		virtual ~CBSpline(void);
 
-	// Add control point
-	void AddControlPoint ( T controlPoint );
+		// Order of curve
+		void SetOrder ( int order );
+		int GetOrder ( );
 
-	// Remove control point
-	bool RemoveControlPoint ( T controlPoint );
+		// Add control point
+		void AddControlPoint ( T controlPoint );
 
-	// Clear all control points
-	void ClearControlPoints ( );
+		// Remove control point
+		bool RemoveControlPoint ( T controlPoint );
 
-	// Remove first waypoint
-	bool RemoveFirstControlPoint ( );
+		// Clear all control points
+		void ClearControlPoints ( );
 
-	// Get a vector containing the control points
-	std::vector<T>* GetControlPoints ( );
+		// Remove first waypoint
+		bool RemoveFirstControlPoint ( );
 
-	// Get a point of the curve at P ( v ), v in range 0..GetParameterMax ( )
-	void GetPoint ( double v, T* pointOut );
+		// Get a vector containing the control points
+		std::vector<T>* GetControlPoints ( );
 
-	// Get max value of the b-spline parameter to work out the parameter range: 0..GetParameterMax ( )
-	double GetParameterMax ( );
+		// Get a point of the curve at P ( v ), v in range 0..GetParameterMax ( )
+		void GetPoint ( double v, T* pointOut );
 
-	// Get the curve parameter value at which specified ctrl point has maximum influence
-	double GetBlendingFunctionMaximum ( int controlPoint );
+		// Get max value of the b-spline parameter to work out the parameter range: 0..GetParameterMax ( )
+		double GetParameterMax ( );
 
-	// Create a universal knot vector
-	void CreateUniversalKnotVector ( );
+		// Get the curve parameter value at which specified ctrl point has maximum influence
+		double GetBlendingFunctionMaximum ( int controlPoint );
 
-	// * Create other kinds of knot vector, e.g. Uniform, Interpolating...
+		// Create a universal knot vector
+		void CreateUniversalKnotVector ( );
 
-	// Pre-Calculate or if possible load constants for blending function maxima
-	void PreProcessBlendingMaxPoints ( );
+		// * Create other kinds of knot vector, e.g. Uniform, Interpolating...
 
-	// Debug print function
-	void DebugOutput ( );
+		// Pre-Calculate or if possible load constants for blending function maxima
+		void PreProcessBlendingMaxPoints ( );
 
-protected:
+		// Debug print function
+		void DebugOutput ( );
 
-	// Evaluate the k'th blending function at order t at P ( v )
-	double EvaluateBlendingFunction ( int k, int t, double v );
+	protected:
 
-	// Look up parameter value that yeilds max point for given blending function / control point
-	// Assuming Universal knot vector
-	double GetMaxValueUniversal ( int i );
+		// Evaluate the k'th blending function at order t at P ( v )
+		double EvaluateBlendingFunction ( int k, int t, double v );
 
-	// Calculate parameter value that yeilds max point for given blending function / control point
-	// No assumptions about knot vector
-	double GetMaxValueCustom ( int i );
+		// Look up parameter value that yeilds max point for given blending function / control point
+		// Assuming Universal knot vector
+		double GetMaxValueUniversal ( int i );
 
-	// Types of knot vector
-	typedef enum KnotVectorType { None, Universal, Custom /* ...more */ };
+		// Calculate parameter value that yeilds max point for given blending function / control point
+		// No assumptions about knot vector
+		double GetMaxValueCustom ( int i );
 
-	// Current type of knot vector
-	KnotVectorType m_knotVectorType;
+		// Types of knot vector
+		typedef enum KnotVectorType { None, Universal, Custom /* ...more */ };
 
-	// Order of curve
-	int m_order;
+		// Current type of knot vector
+		KnotVectorType m_knotVectorType;
 
-	// Control point vector
-	std::vector<T>* m_controlPoints;
+		// Order of curve
+		int m_order;
 
-	// Knot vector
-	std::vector<double>* m_knots;
+		// Control point vector
+		std::vector<T>* m_controlPoints;
 
-	// Cached max values of blending functions
-	std::vector<double>* m_maxBlendingValues;
+		// Knot vector
+		std::vector<double>* m_knots;
 
-	bool m_maxValuesValid; // Are the cached values valid
-};
+		// Cached max values of blending functions
+		std::vector<double>* m_maxBlendingValues;
+
+		bool m_maxValuesValid; // Are the cached values valid
+	};
+}
+
+using namespace PlaybackLib;
 
 // Create
 template <typename T>

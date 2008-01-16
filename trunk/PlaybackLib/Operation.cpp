@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "Operation.h"
 
+using namespace PlaybackLib;
+
 // Root constructor
 COperation::COperation(void)
 {
@@ -24,16 +26,12 @@ void COperation::GetLastSetPoint ( double* point )
 
 }
 
-// Deep copy operator
-COperation COperation::operator = ( COperation op )
+void COperation::Copy ( COperation* op )
 {
-	if ( &op == this ) return *this;
+	OutputDebugString ( "COperation::CopyIn\n" );
 
-	m_type= op.m_type;		// Type of this operation
-	m_state= op.m_state;	// Current state of this operation
-	//m_userCancel= op.m_userCancel;
-
-	return *this;
+	m_type= op->m_type;		// Type of this operation
+	m_state= op->m_state;	// Current state of this operation
 }
 
 // Create a new object of this type
@@ -48,7 +46,7 @@ COperation* COperation::Clone ( )
 
 // Get playback controller force
 void COperation::GetForce ( double* force, double* position, 
-							control_state* control_x, control_state* control_y, control_state* control_z )
+							ctrl_state* control_x, ctrl_state* control_y, ctrl_state* control_z )
 {
 
 }

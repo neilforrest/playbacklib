@@ -2,6 +2,8 @@
 #include "PlaybackNode.h"
 #include "Parse.h"
 
+using namespace PlaybackLib;
+
 CPlaybackNode::CPlaybackNode(void)
 {
 	m_space[0]= 0.0;

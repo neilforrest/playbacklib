@@ -6,33 +6,37 @@
 #define PB_API __declspec(dllexport)
 #endif
 
-class PB_API CPIDControlParameters
+namespace PlaybackLib
 {
-public:
-	CPIDControlParameters(void);
-	virtual ~CPIDControlParameters(void);
 
-	// Some preset values
-	// ..................
+	class PB_API CPIDControlParameters
+	{
+	public:
+		CPIDControlParameters(void);
+		virtual ~CPIDControlParameters(void);
 
-	// PHANToM Omni
-	void SetDevicePhantomOmni ( );
+		// Some preset values
+		// ..................
 
-	// PHANToM Premium
-	void SetDevicePhantomPremium ( );
+		// PHANToM Omni
+		void SetDevicePhantomOmni ( );
 
-	// ..................
+		// PHANToM Premium
+		void SetDevicePhantomPremium ( );
 
-	// Assignment operator
-	CPIDControlParameters operator = ( CPIDControlParameters p );
+		// ..................
 
-	double m_p;
-	double m_i;
-	double m_d;
-	double m_f;
-	double m_out_filter;
-	double m_gain;
-	double m_sat_low;
-	double m_sat_high;
-	double m_dead_zone;
-};
+		// Assignment operator
+		CPIDControlParameters operator = ( CPIDControlParameters p );
+
+		double m_p;
+		double m_i;
+		double m_d;
+		double m_f;
+		double m_out_filter;
+		double m_gain;
+		double m_sat_low;
+		double m_sat_high;
+		double m_dead_zone;
+	};
+}

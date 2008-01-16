@@ -1,8 +1,11 @@
 #include "stdafx.h"
+#include "Parse.h"
 #include <math.h>
 
+using namespace PlaybackLib;
+
 // Convert string to float
-bool StringToFloat ( char* str, float* flt )
+bool PlaybackLib::StringToFloat ( char* str, float* flt )
 {
 	// Count the number of digits before the d.p.
 	int prefixCount= 0;
@@ -87,7 +90,7 @@ bool StringToFloat ( char* str, float* flt )
 }
 
 // Convert string to int
-bool StringToInt ( char* str, int* integer )
+bool PlaybackLib::StringToInt ( char* str, int* integer )
 {
 	// Count the number of digits before the d.p.
 	int prefixCount= 0;

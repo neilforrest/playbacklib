@@ -2,6 +2,8 @@
 #include "PlaybackControl.h"
 #include "PlaybackDevice.h"
 
+using namespace PlaybackLib;
+
 CPlaybackControl::CPlaybackControl(void)
 {
 	// Singleton device observer for this controller
@@ -65,6 +67,8 @@ CMoveToPointOp* CPlaybackControl::AddMoveToPointOp ( double x, double y, double 
 {
 	CMoveToPointOp* op= new CMoveToPointOp ( x, y, z, speed );
 
+	op->SetHoldAtEnd ( true );
+
 	AddOperation ( op );
 
 	return op;
@@ -74,6 +78,8 @@ CMoveToPointOp* CPlaybackControl::AddMoveToPointOp ( double x, double y, double 
 CMoveToPointOp* CPlaybackControl::AddMoveToPointOp ( char* filename, double speed )
 {
 	CMoveToPointOp* op= new CMoveToPointOp ( filename, speed );
+
+	//op->SetHoldAtEnd ( true );
 
 	AddOperation ( op );
 
@@ -94,7 +100,8 @@ CRecordOp* CPlaybackControl::AddRecordOp ( char* filename, double sampleRate, do
 CPlaybackOp* CPlaybackControl::AddPlaybackOp ( char* filename, int bSplineOrder )
 {
 	CPlaybackOp* op= new CPlaybackOp  ( filename, bSplineOrder );
-
+	//op->SetHoldAtEnd ( true );
+	//op->SetPlaybackSpeed ( 5 );
 	AddOperation ( op );
 
 	return op;
