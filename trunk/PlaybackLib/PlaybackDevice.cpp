@@ -124,7 +124,6 @@ void CPlaybackDevice::GetForce ( double* force, double* position )
 			 operation->m_state == operation->Error ||			// Error
 			 operation->m_state == operation->Completed )		// Finished
 		{
-			OutputDebugString ( "Advance" );
 			AdvanceOperation ( );
 		}
 		else
@@ -170,8 +169,6 @@ void CPlaybackDevice::GetForce ( double* force, double* position )
 // Syncronise with subject (CPlaybackControl)
 void CPlaybackDevice::Syncronise ( )
 {
-	OutputDebugString ( "CPlaybackDevice::Syncronise ( )\n" );
-
 	// If need be, re-create playback controllers with new settings
 	if ( playbackControl->IsPIDParamsChanged () )
 	{

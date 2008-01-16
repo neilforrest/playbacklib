@@ -248,6 +248,13 @@ void CPlaybackOp::GetForce ( double* force, double* position,
 			delete n;
 		}
 
+		if ( m_bSpline->GetControlPoints ()->size () < m_bSplineOrder + 1 ||
+			 m_bSpline->GetControlPoints ()->size () < 2 )
+		{
+				m_state= Error;
+				return;
+		}
+
 		// Create a knot vector and get maximum values of blending functions
 		m_bSpline->CreateUniversalKnotVector ( );
 		m_bSpline->PreProcessBlendingMaxPoints ( );
@@ -289,7 +296,7 @@ void CPlaybackOp::GetForce ( double* force, double* position,
 	{
 		// List of control points in current spline
 		std::vector<CPlaybackNode>* controlPoints= m_bSpline->GetControlPoints ();
-
+		//                          *Initially 1*
 		while ( controlPoints->at ( m_nextControlPoint ).m_time / m_speed <= elapsed - m_totalPauseDuration )
 		{
 			// Clamp to end of b-spline, new ctrl points are loaded when we reach the
