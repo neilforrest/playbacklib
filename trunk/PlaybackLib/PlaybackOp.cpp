@@ -296,100 +296,102 @@ void CPlaybackOp::GetForce ( double* force, double* position,
 	{
 		// List of control points in current spline
 		std::vector<CPlaybackNode>* controlPoints= m_bSpline->GetControlPoints ();
+
 		//                          *Initially 1*
-		while ( controlPoints->at ( m_nextControlPoint ).m_time / m_speed <= elapsed - m_totalPauseDuration )
+		while ( m_nextControlPoint < controlPoints->size () &&
+			    controlPoints->at ( m_nextControlPoint ).m_time / m_speed <= elapsed - m_totalPauseDuration )
 		{
-			// Clamp to end of b-spline, new ctrl points are loaded when we reach the
-			// halfway point, so if we get the the end of the spline, it's because we're at end of playback
-			if ( m_nextControlPoint >= controlPoints->size () )
-			{
-				m_nextControlPoint= controlPoints->size ()-1;
-			}
-
-			// Time since start or passing last control point
-			double timeSinceStart= (elapsed - m_totalPauseDuration) - 
-									controlPoints->at ( m_nextControlPoint - 1 ).m_time / m_speed;
-
-			// Total time gap between control points
-			double totalTimeGap= controlPoints->at ( m_nextControlPoint ).m_time / m_speed - 
-								 controlPoints->at ( m_nextControlPoint - 1 ).m_time / m_speed;
-
-			// Desired fraction complete
-			double complete= timeSinceStart / totalTimeGap;
-
-			if ( complete < 0 )
-			{
-				complete= 0.0;
-			}
-			else if ( complete > 1 )
-			{
-				complete= 1.0;
-			}
-
-			// Desired progress through spline
-			m_progress= m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint-1 ) +
-						complete * ( m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint ) -
-									 m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint-1 ) );
-
-			// If we're over half way through current b-spline
-			if ( !m_endOfWaypoints && m_progress > range / 2.0 )
-			{
-				// Get next waypoint from file
-				eof= false; error= false;
-				CPlaybackNode *n= new CPlaybackNode ();
-				n->GetNode ( m_inFile, &eof, &error );	// Read from file
-
-				// Check for errors
-				if ( eof )
-				{
-					// End of file, last waypoint has been added
-					m_endOfWaypoints= true;
-				}
-
-				if ( error )
-				{
-					m_state= Error;
-					delete n;
-					return;
-				}
-
-				// Add to waypoint to b-spline
-				if ( !eof )
-				{
-					// At next waypoint at end and remove first waypoint from start
-					m_bSpline->RemoveFirstControlPoint ( );	// Remove first
-
-					m_bSpline->AddControlPoint ( *n );
-
-					// Curve has moved forwards, decrement progress to maintain position
-					m_progress-= 1.0;
-					m_nextControlPoint-= 1;
-				}
-
-				// Delete temp storage
-				delete n;
-			}
-
-			// Check if we've reached the end of the b-spline
-			if ( m_progress >= range )
-			{
-				if ( m_holdAtEnd )
-				{
-					// Clamp range and continue
-					m_holdingAtEnd= true;
-					m_progress= range;
-					break; // while loop
-				}
-				else
-				{
-					// Reached end of b-spline, playback completed
-					m_state= Completed;
-					return;
-				}
-			}
-
 			m_nextControlPoint++;
-		} // end while
+		}
+
+		// Clamp to end of b-spline, new ctrl points are loaded when we reach the
+		// halfway point, so if we get the the end of the spline, it's because we're at end of playback
+		if ( m_nextControlPoint >= controlPoints->size () )
+		{
+			m_nextControlPoint= controlPoints->size ()-1;
+		}
+
+		// Time since start or passing last control point
+		double timeSinceStart= (elapsed - m_totalPauseDuration) - 
+								controlPoints->at ( m_nextControlPoint - 1 ).m_time / m_speed;
+
+		// Total time gap between control points
+		double totalTimeGap= controlPoints->at ( m_nextControlPoint ).m_time / m_speed - 
+							 controlPoints->at ( m_nextControlPoint - 1 ).m_time / m_speed;
+
+		// Desired fraction complete
+		double complete= timeSinceStart / totalTimeGap;
+
+		if ( complete < 0 )
+		{
+			complete= 0.0;
+		}
+		else if ( complete > 1 )
+		{
+			complete= 1.0;
+		}
+
+		// Desired progress through spline
+		m_progress= m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint-1 ) +
+					complete * ( m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint ) -
+								 m_bSpline->GetBlendingFunctionMaximum ( m_nextControlPoint-1 ) );
+
+		// If we're over half way through current b-spline
+		if ( !m_endOfWaypoints && m_progress > range / 2.0 )
+		{
+			// Get next waypoint from file
+			eof= false; error= false;
+			CPlaybackNode *n= new CPlaybackNode ();
+			n->GetNode ( m_inFile, &eof, &error );	// Read from file
+
+			// Check for errors
+			if ( eof )
+			{
+				// End of file, last waypoint has been added
+				m_endOfWaypoints= true;
+			}
+
+			if ( error )
+			{
+				m_state= Error;
+				delete n;
+				return;
+			}
+
+			// Add to waypoint to b-spline
+			if ( !eof )
+			{
+				// At next waypoint at end and remove first waypoint from start
+				m_bSpline->RemoveFirstControlPoint ( );	// Remove first
+
+				m_bSpline->AddControlPoint ( *n );
+
+				// Curve has moved forwards, decrement progress to maintain position
+				m_progress-= 1.0;
+				m_nextControlPoint-= 1;
+			}
+
+			// Delete temp storage
+			delete n;
+		}
+
+		// Check if we've reached the end of the b-spline
+		if ( m_progress >= range )
+		{
+			if ( m_holdAtEnd )
+			{
+				// Clamp range and continue
+				m_holdingAtEnd= true;
+				m_progress= range;
+				//break; // while loop
+			}
+			else
+			{
+				// Reached end of b-spline, playback completed
+				m_state= Completed;
+				return;
+			}
+		}
 	}
 
 	// Get point at m_progress along b-spline
