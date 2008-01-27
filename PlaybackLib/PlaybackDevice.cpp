@@ -74,7 +74,7 @@ void CPlaybackDevice::AdvanceOperation ( )
 	if ( m_operations.size () > 0 )
 	{
 		// If it's a move to point operation
-		if ( m_operations.at ( 0 )->m_type == COperation::MoveToPoint )
+		if ( m_operations.at ( 0 )->GetType () == COperation::MoveToPoint )
 		{
 			// Get the last operations last set point
 			double point[3];
@@ -120,9 +120,9 @@ void CPlaybackDevice::GetForce ( double* force, double* position )
 		COperation* operation= m_operations.at ( 0 );
 
 		// Check that operation is not finished
-		if ( operation->m_state == operation->Cancelled ||		// Cancelled
-			 operation->m_state == operation->Error ||			// Error
-			 operation->m_state == operation->Completed )		// Finished
+		if ( operation->GetState () == operation->Cancelled ||		// Cancelled
+			 operation->GetState () == operation->Error ||			// Error
+			 operation->GetState () == operation->Completed )		// Finished
 		{
 			AdvanceOperation ( );
 		}
@@ -214,9 +214,9 @@ void CPlaybackDevice::Syncronise ( )
 	// Update queued operations
 	for ( unsigned int i= 0; i < m_operations.size (); i++ )
 	{
-		if ( (controlQueue->at ( i ))->m_userCancel )
+		if ( (controlQueue->at ( i ))->IsCancelled ( ) )
 		{
-			m_operations.at ( i )->m_state= COperation::Cancelled;
+			m_operations.at ( i )->SetState ( COperation::Cancelled );
 		}
 
 		// Deep copy device version to control version

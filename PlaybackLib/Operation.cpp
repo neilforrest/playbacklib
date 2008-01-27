@@ -20,6 +20,28 @@ void COperation::Cancel ( )
 	m_userCancel= true;
 }
 
+bool COperation::IsCancelled ( )
+{
+	return m_userCancel;
+}
+
+// Get type of operation
+COperation::OperationType COperation::GetType ( )
+{
+	return m_type;
+}
+
+// Get current state of operation
+COperation::OperationState COperation::GetState ( )
+{
+	return m_state;
+}
+
+void COperation::SetState ( OperationState state )
+{
+	m_state= state;
+}
+
 // For continuity it's sometimes needed to know the last set point / bead position
 void COperation::GetLastSetPoint ( double* point )
 {

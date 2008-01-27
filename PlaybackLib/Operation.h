@@ -40,6 +40,14 @@ namespace PlaybackLib
 
 		// Cancel this operation
 		void Cancel ( );
+		bool IsCancelled ( );
+
+		// Get type of operation
+		OperationType GetType ( );
+
+		// Get current state of operation
+		OperationState GetState ( );
+		void SetState ( OperationState state );
 
 		// Deep copy operator
 		virtual void Copy ( COperation* op );
@@ -56,13 +64,11 @@ namespace PlaybackLib
 
 		virtual std::string ToString ( );
 
+	protected:
 		OperationType m_type;	// Type of this operation
 		OperationState m_state;	// Current state of this operation
 
 		// User cancelled operation
 		bool m_userCancel;
-
-	protected:
-
 	};
 }
