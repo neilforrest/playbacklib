@@ -17,13 +17,15 @@ HDCallbackCode HDCALLBACK MainForceCallback(void *pUserData)
 
     hdBeginFrame(hdGetCurrentDevice());
 
+	// Read position from device
 	double position[3];
     hdGetDoublev(HD_CURRENT_POSITION, position);
 
+	// Supply position to playback device, and recieve force to display
 	double force[3];
-
 	dlg->playbackDevice->GetForce ( force, position );
 
+	// Send calculated force to device
 	HDdouble f[3]= { force[0], force[1], force[2] };
 	hdSetDoublev(HD_CURRENT_FORCE, f);
 
@@ -170,10 +172,8 @@ BOOL CPlaybackLibClientDlg::OnInitDialog()
         return FALSE;
     }
 
-    /* Schedule the haptic callback function for continuously monitoring the
-       button state and rendering the anchored spring force. */
-    int callbackHandle = hdScheduleAsynchronous (
-		MainForceCallback, this, HD_MIN_SCHEDULER_PRIORITY );// HD_MAX_SCHEDULER_PRIORITY);
+    // Schedule the haptic rendering callback function
+    int callbackHandle = hdScheduleAsynchronous ( MainForceCallback, this, HD_MAX_SCHEDULER_PRIORITY );
 
     hdEnable(HD_FORCE_OUTPUT);
 
