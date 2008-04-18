@@ -6,6 +6,9 @@ using namespace PlaybackLib;
 
 CPlaybackOp::CPlaybackOp( char* filename, int bSplineOrder )
 {
+	// Last known playback time (sec)
+	m_playbackTime= 0.0;
+
 	m_inFile= NULL;
 	m_inFilename= CString ( filename );
 
@@ -54,6 +57,8 @@ CPlaybackOp::CPlaybackOp( char* filename, int bSplineOrder )
 
 	// Get freq of timing counter
 	QueryPerformanceFrequency((LARGE_INTEGER*)&m_freq);
+
+	m_playbackTimeTotal= 0.0;
 }
 
 CPlaybackOp::~CPlaybackOp(void)
@@ -113,6 +118,13 @@ bool CPlaybackOp::IsPauseIfResisting ( )
 	return m_useTolerance;
 }
 
+// Get last known playback time (sec)
+// Time from start of recording that last played back point was recorded
+double CPlaybackOp::GetPlaybackTime ()
+{
+	return m_playbackTime;
+}
+
 // Set tolerance used to pause playback if user resists motion
 void CPlaybackOp::SetPauseIfResistingTolerance ( double tol )
 {
@@ -161,6 +173,10 @@ void CPlaybackOp::Copy ( COperation* op )
 	m_beadPos[0]= subOp->m_beadPos[0];
 	m_beadPos[1]= subOp->m_beadPos[1];
 	m_beadPos[2]= subOp->m_beadPos[2];
+
+	// Current playback time
+	m_playbackTime= subOp->m_playbackTime;
+	m_playbackTimeTotal= subOp->m_playbackTimeTotal;
 
 	m_tolerance= subOp->m_tolerance;
 	m_useTolerance= subOp->m_useTolerance;
@@ -212,6 +228,10 @@ void CPlaybackOp::GetForce ( double* force, double* position,
 			m_state= Error;
 			return;
 		}
+
+		// Read time-stamp on last entry to get total duration of operation
+		CPlaybackNode node= ReadLastNode ( m_inFile );
+		m_playbackTimeTotal= node.m_time;
 
 		// Set progress through curve
 		m_progress= 0.0;
@@ -393,6 +413,10 @@ void CPlaybackOp::GetForce ( double* force, double* position,
 		}
 	}
 
+	// Save current playback time for queries
+	if ( !m_paused )	// Only update if playing, if paused: m_totalPauseDuration doesn't get updated until EndPause()
+		m_playbackTime= elapsed - m_totalPauseDuration;
+
 	// Get point at m_progress along b-spline
 	m_bSpline->GetPoint ( m_progress, &m_beadNode );
 	
@@ -417,7 +441,10 @@ void CPlaybackOp::GetLastSetPoint ( double* point )
 
 std::string CPlaybackOp::ToString ( )
 {
-	return "Playback Operation: " + COperation::ToString ( );
+	char s[256];
+	sprintf ( s, " - Progress %.1f / %.1f", GetPlaybackTime(), GetTotalPlaybackTime() );
+
+	return "Playback Operation: " + COperation::ToString ( ) + std::string ( s );
 }
 
 void CPlaybackOp::StartPause ()
@@ -444,4 +471,34 @@ void CPlaybackOp::EndPause ()
 
 		m_paused= false;
 	}
+}
+
+// Read the value of the last time-stamp in the playback file
+CPlaybackNode CPlaybackOp::ReadLastNode ( FILE* file )
+{
+	// Seek to last line of file
+	fseek(file, 0, SEEK_END);
+	fseek(file, -3, SEEK_CUR);	// Jump over EOF and two new lines
+
+	// Read backwards until first new line char
+	char c;
+	while ( (c= fgetc ( file )) != '\n' )
+		fseek(file, -2, SEEK_CUR);
+
+	// Read node
+	CPlaybackNode node;
+	bool error= false;
+	bool eof= false;
+	node.GetNode ( file, &eof, &error );
+
+	// Seek back to start of file
+	rewind ( file );
+
+	return node;
+}
+
+// Get total duration of the recording (excluding pauses due to user resisting)
+double CPlaybackOp::GetTotalPlaybackTime ()
+{
+	return m_playbackTimeTotal;
 }

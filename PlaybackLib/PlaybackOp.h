@@ -75,6 +75,16 @@ namespace PlaybackLib
 		// Debugging: Return string representation of operation
 		std::string ToString ( );
 
+		// Get last known playback time (sec)
+		// Time from start of recording that last played back point was recorded (excluding pauses due to user resisting)
+		double GetPlaybackTime ();
+
+		// TODO: Impliment this so that playback progress can be calculated
+		// Need to read the time-stamp on the last line of the recording
+
+		// Get total duration of the recording (excluding pauses due to user resisting)
+		double GetTotalPlaybackTime ();
+
 	protected:
 
 		// Begin a pause in playback
@@ -82,6 +92,9 @@ namespace PlaybackLib
 
 		// End the current pause in playback
 		void EndPause ();
+
+		// Read the value of the last time-stamp in the playback file
+		CPlaybackNode ReadLastNode ( FILE* file );
 
 		// Current interpolated playback position
 		CPlaybackNode m_beadNode;
@@ -112,6 +125,12 @@ namespace PlaybackLib
 
 		// Performance counter frequency
 		LARGE_INTEGER m_freq;
+
+		// Last known playback time (sec)
+		double m_playbackTime;
+
+		// Total duration of the recording (excluding pauses due to user resisting) (sec)
+		double m_playbackTimeTotal;
 
 		// Do first time initialisation?
 		bool m_firstTime;
