@@ -53,6 +53,9 @@ namespace PlaybackLib
 		void SetPauseIfResistingTolerance ( double tol );
 		double GetPauseIfResistingTolerance ( );
 
+		// Is the operation currently paused due to user resistance
+		bool IsPaused ();
+
 		// Hold the user at the end of the playback trajectory and wait for cancel
 		void SetHoldAtEnd ( bool hold );
 		bool IsHoldAtEnd ( );

@@ -136,6 +136,12 @@ double CPlaybackOp::GetPauseIfResistingTolerance ( )
 	return m_tolerance;
 }
 
+// Is the operation currently paused due to user resistance
+bool CPlaybackOp::IsPaused ()
+{
+	return m_paused;
+}
+
 // Hold the user at the end of the playback trajectory and wait for cancel
 void CPlaybackOp::SetHoldAtEnd ( bool hold )
 {
@@ -187,6 +193,9 @@ void CPlaybackOp::Copy ( COperation* op )
 
 	m_holdAtEnd= subOp->m_holdAtEnd;
 	m_holdingAtEnd= subOp->m_holdingAtEnd;
+
+	// Playback is paused due to user resistance
+	m_paused= subOp->m_paused;
 }
 
 
