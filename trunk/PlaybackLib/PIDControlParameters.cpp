@@ -18,7 +18,7 @@ CPIDControlParameters::~CPIDControlParameters(void)
 
 // PHANToM Omni
 void CPIDControlParameters::SetDevicePhantomOmni ( )
-{
+{//
 	// PID control parameters
 	m_p = 0.3;
 	m_i = 0.0005;
