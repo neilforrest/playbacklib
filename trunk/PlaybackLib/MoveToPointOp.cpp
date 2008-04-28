@@ -190,6 +190,8 @@ void CMoveToPointOp::Copy ( COperation* op )
 	// Holding at end of playback
 	m_holdAtEnd= opSub->m_holdAtEnd;
 	m_holdingAtEnd= opSub->m_holdingAtEnd;
+
+	m_paused= opSub->m_paused;
 }
 
 // Create a new object of this type
@@ -373,6 +375,12 @@ void CMoveToPointOp::SetPauseIfResistingTolerance ( double tol )
 double CMoveToPointOp::GetPauseIfResistingTolerance ( )
 {
 	return m_tolerance;
+}
+
+// Is the operation currently paused due to user resistance
+bool CMoveToPointOp::IsPaused ()
+{
+	return m_paused;
 }
 
 // Hold the user at the end of the playback trajectory and wait for cancel
