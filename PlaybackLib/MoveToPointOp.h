@@ -57,6 +57,9 @@ namespace PlaybackLib
 		void SetPauseIfResistingTolerance ( double tol );
 		double GetPauseIfResistingTolerance ( );
 
+		// Is the operation currently paused due to user resistance
+		bool IsPaused ();
+
 		void Copy ( COperation* op );
 
 		std::string ToString ( );
