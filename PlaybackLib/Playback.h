@@ -8,3 +8,4 @@
 #include "PlaybackOp.h"
 #include "PIDControlParameters.h"
 #include "RecordOp.h"
+#include "PlaybackNode.h"

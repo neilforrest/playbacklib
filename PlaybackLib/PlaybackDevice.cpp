@@ -111,7 +111,7 @@ void CPlaybackDevice::GetForce ( double* force, double* position )
 	UpdateFrameRate ( );
 
 	// Zero forces
-	force[0]= 0.0; force[1]= 0.0; force[2]= 0.0;
+	//force[0]= 0.0; force[1]= 0.0; force[2]= 0.0;
 
 	// While top most operation is completed, advance queue
 	while ( m_operations.size () != 0 )

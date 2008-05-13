@@ -1,9 +1,15 @@
 #pragma once
 
+#ifdef PB_IMPORT
+#define PB_API __declspec(dllimport)
+#else
+#define PB_API __declspec(dllexport)
+#endif
+
 namespace PlaybackLib
 {
 
-	class CPlaybackNode
+	class PB_API CPlaybackNode
 	{
 	public:
 		CPlaybackNode(void);
@@ -27,6 +33,10 @@ namespace PlaybackLib
 
 		CPlaybackNode operator / ( double a );
 
+		// Use the force parameter when loading/saving node data etc
+		void SetUseForceData ( bool useForceData );
+		bool IsUseForceData ();
+
 		// Get string representation
 		CString ToString ( );
 
@@ -41,5 +51,12 @@ namespace PlaybackLib
 
 		// Position time
 		double m_time;
+
+		// Force at this node
+		double m_force[3];
+
+	protected:
+		// Use the force parameter when loading/saving node data etc
+		bool m_useForce;
 	};
 }

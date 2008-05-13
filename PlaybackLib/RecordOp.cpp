@@ -4,7 +4,7 @@
 
 using namespace PlaybackLib;
 
-CRecordOp::CRecordOp( char* filename, double sampleRate, double resolution )
+CRecordOp::CRecordOp( char* filename, double sampleRate, double resolution, bool recordForce )
 {
 	// Open output file later
 	m_outFile= NULL;
@@ -21,6 +21,8 @@ CRecordOp::CRecordOp( char* filename, double sampleRate, double resolution )
 
 	// Currently in a sub resolution gap in recording
 	m_gap= false;
+
+	m_useForce= recordForce;
 }
 
 CRecordOp::~CRecordOp(void)
@@ -38,6 +40,16 @@ CRecordOp::~CRecordOp(void)
 
 		fclose ( m_outFile );
 	}
+}
+
+void CRecordOp::SetUseForceData ( bool useForce )
+{
+	m_useForce= useForce;
+}
+
+bool CRecordOp::IsUseForceData ( )
+{
+	return m_useForce;
 }
 
 // For continuity it's sometimes needed to know the last set point / bead position
@@ -62,6 +74,8 @@ void CRecordOp::Copy ( COperation* op )
 	m_freq= subOp->m_freq;
 
 	m_resolution= subOp->m_resolution;
+
+	m_useForce= subOp->m_useForce;
 }
 
 // Create a new object of this type
@@ -96,6 +110,9 @@ void CRecordOp::GetForce ( double* force, double* position,
 			return;
 		}
 
+		// Record force data, or not
+		m_lastNode.SetUseForceData ( m_useForce );
+
 		// Save starting time
 		QueryPerformanceFrequency((LARGE_INTEGER*)&m_freq);
 		QueryPerformanceCounter((LARGE_INTEGER*)&m_startCount);
@@ -104,6 +121,11 @@ void CRecordOp::GetForce ( double* force, double* position,
 		m_lastNode.m_space[0]= position[0];
 		m_lastNode.m_space[1]= position[1];
 		m_lastNode.m_space[2]= position[2];
+
+		m_lastNode.m_force[0]= force[0];
+		m_lastNode.m_force[1]= force[1];
+		m_lastNode.m_force[2]= force[2];
+
 		m_lastNode.m_time= 0;
 
 		fprintf ( m_outFile, m_lastNode.ToString ( ) );
@@ -149,6 +171,11 @@ void CRecordOp::GetForce ( double* force, double* position,
 			m_lastNode.m_space[0]= position[0];
 			m_lastNode.m_space[1]= position[1];
 			m_lastNode.m_space[2]= position[2];
+
+			m_lastNode.m_force[0]= force[0];
+			m_lastNode.m_force[1]= force[1];
+			m_lastNode.m_force[2]= force[2];
+
 			m_lastNode.m_time= elapsed;
 
 			fprintf ( m_outFile, m_lastNode.ToString ( ) );
@@ -159,11 +186,20 @@ void CRecordOp::GetForce ( double* force, double* position,
 			m_lastNode.m_space[0]= position[0];
 			m_lastNode.m_space[1]= position[1];
 			m_lastNode.m_space[2]= position[2];
+
+			m_lastNode.m_force[0]= force[0];
+			m_lastNode.m_force[1]= force[1];
+			m_lastNode.m_force[2]= force[2];
+
 			m_lastNode.m_time= elapsed;
 
 			m_gap= true;
 		}
 	}
+
+	force[0]= 0.0;
+	force[1]= 0.0;
+	force[2]= 0.0;
 }
 
 std::string CRecordOp::ToString ( )
