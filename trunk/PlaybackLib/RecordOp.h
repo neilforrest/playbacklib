@@ -22,11 +22,16 @@ namespace PlaybackLib
 		// Create a new record operation
 		CRecordOp( char* filename,				// Output filename
 				   double sampleRate= 250,		// Samples per second (range > 0 and <= 1000)
-				   double resolution= 0.0		// Minimum change in position to record (range >= 0)
+				   double resolution= 0.0,		// Minimum change in position to record (range >= 0)
+				   bool recordForce= false		// Record force data
 				 );
 
 		// Destroy the record operation
 		virtual ~CRecordOp(void);
+
+		// Record force data
+		void SetUseForceData ( bool useForce );
+		bool IsUseForceData ( );
 
 		// For continuity it's sometimes needed to know the last set point / bead position
 		void GetLastSetPoint ( double* point );
@@ -75,6 +80,9 @@ namespace PlaybackLib
 
 		// Currently in a sub resolution gap in recording
 		bool m_gap;
+
+		// Record force data
+		bool m_useForce;
 
 	#ifdef RECORD_OP_RECORD_PATH
 		// For debugging, record the actual pathway at max rate/resolution available

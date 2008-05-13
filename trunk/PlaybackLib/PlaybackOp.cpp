@@ -176,9 +176,7 @@ void CPlaybackOp::Copy ( COperation* op )
 	m_freq= subOp->m_freq;
 
 	// Current bead position
-	m_beadPos[0]= subOp->m_beadPos[0];
-	m_beadPos[1]= subOp->m_beadPos[1];
-	m_beadPos[2]= subOp->m_beadPos[2];
+	m_beadNode= subOp->m_beadNode;
 
 	// Current playback time
 	m_playbackTime= subOp->m_playbackTime;
@@ -510,4 +508,10 @@ CPlaybackNode CPlaybackOp::ReadLastNode ( FILE* file )
 double CPlaybackOp::GetTotalPlaybackTime ()
 {
 	return m_playbackTimeTotal;
+}
+
+// Get last playback node
+CPlaybackNode CPlaybackOp::GetLastPlaybackNode ()
+{
+	return m_beadNode;
 }

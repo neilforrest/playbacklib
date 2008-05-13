@@ -10,7 +10,7 @@
 #endif
 
 // For debugging, output actual interpolated playback path to the specified filename
-//#define PLAYBACK_OP_RECORD_PATH		"PlaybackOpPath.csv"
+#define PLAYBACK_OP_RECORD_PATH		"PlaybackOpPath.csv"
 
 namespace PlaybackLib
 {
@@ -82,11 +82,11 @@ namespace PlaybackLib
 		// Time from start of recording that last played back point was recorded (excluding pauses due to user resisting)
 		double GetPlaybackTime ();
 
-		// TODO: Impliment this so that playback progress can be calculated
-		// Need to read the time-stamp on the last line of the recording
-
 		// Get total duration of the recording (excluding pauses due to user resisting)
 		double GetTotalPlaybackTime ();
+
+		// Get last playback node
+		CPlaybackNode GetLastPlaybackNode ();
 
 	protected:
 

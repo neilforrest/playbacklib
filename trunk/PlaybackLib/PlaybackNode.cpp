@@ -11,17 +11,43 @@ CPlaybackNode::CPlaybackNode(void)
 	m_space[2]= 0.0;
 
 	m_time= 0.0;
+
+	m_force[0]= 0.0;
+	m_force[1]= 0.0;
+	m_force[2]= 0.0;
+
+	m_useForce= false;
 }
 
 CPlaybackNode::~CPlaybackNode(void)
 {
 }
 
+// Use the force parameter when loading/saving node data etc
+void CPlaybackNode::SetUseForceData ( bool useForceData )
+{
+	m_useForce= useForceData;
+}
+
+bool CPlaybackNode::IsUseForceData ()
+{
+	return m_useForce;
+}
+
 // Get string representation
 CString CPlaybackNode::ToString ( )
 {
 	CString str;
-	str.Format ( "%f, %f, %f, %f\n", m_time, m_space[0], m_space[1], m_space[2] );
+
+	if ( m_useForce )
+	{
+		str.Format ( "%f, %f, %f, %f, %f, %f, %f\n", m_time, m_space[0], m_space[1], m_space[2],
+													 m_force[0], m_force[1], m_force[2] );
+	}
+	else
+	{
+		str.Format ( "%f, %f, %f, %f\n", m_time, m_space[0], m_space[1], m_space[2] );
+	}
 
 	return str;
 }
@@ -33,12 +59,16 @@ bool CPlaybackNode::FromString ( CString str )
 	CString token;
 	int curPos= 0;
 
-	float data[4];
+	float data[7];
 
 	// Get first token
 	token= str.Tokenize(", ",curPos);
 	
-	for ( int i= 0; i < 4; i++ )
+	int dataCount= 0;
+	if ( m_useForce ) dataCount= 7;
+	else			  dataCount= 4;
+
+	for ( int i= 0; i < dataCount; i++ )
 	{
 		if ( !StringToFloat ( token.GetBuffer (), &data[i] ) )
 		{
@@ -50,9 +80,16 @@ bool CPlaybackNode::FromString ( CString str )
 	}
 
 	m_time= data[0];
+
 	m_space[0]= data[1];
 	m_space[1]= data[2];
 	m_space[2]= data[3];
+
+	m_force[0]= data[4];
+	m_force[1]= data[5];
+	m_force[2]= data[6];
+
+	//MessageBox ( 0, ToString (), "FromString()", MB_OK );
 
 	return true;
 }
@@ -97,6 +134,10 @@ CPlaybackNode CPlaybackNode::operator= ( CPlaybackNode a )
 	m_space[1]= a.m_space[1];
 	m_space[2]= a.m_space[2];
 
+	m_force[0]= a.m_force[0];
+	m_force[1]= a.m_force[1];
+	m_force[2]= a.m_force[2];
+
 	return *this;
 }
 
@@ -106,6 +147,10 @@ CPlaybackNode CPlaybackNode::operator= ( double a ) // Used to zero the node to 
 	m_space[0]= a;
 	m_space[1]= a;
 	m_space[2]= a;
+
+	m_force[0]= a;
+	m_force[1]= a;
+	m_force[2]= a;
 
 	return *this;
 }
@@ -117,7 +162,10 @@ bool CPlaybackNode::operator== ( CPlaybackNode a )
 		m_time == a.m_time				&&
 		m_space[0] == a.m_space[0]		&&
 		m_space[1] == a.m_space[1]		&&
-		m_space[2] == a.m_space[2];
+		m_space[2] == a.m_space[2]		&&
+		(m_useForce ? ( 	m_force[0] == a.m_force[0]		&&
+							m_force[1] == a.m_force[1]		&&
+							m_force[2] == a.m_force[2]	) : true );
 }
 
 // Addition operator
@@ -133,6 +181,10 @@ CPlaybackNode CPlaybackNode::operator + ( CPlaybackNode a )
 	ans.m_space[1]= m_space[1] + a.m_space[1];
 	ans.m_space[2]= m_space[2] + a.m_space[2];
 
+	ans.m_force[0]= m_force[0];
+	ans.m_force[1]= m_force[1];
+	ans.m_force[2]= m_force[2];
+
 	return ans;
 }
 
@@ -145,6 +197,10 @@ CPlaybackNode CPlaybackNode::operator - ( CPlaybackNode a )
 	ans.m_space[0]= m_space[0] - a.m_space[0];
 	ans.m_space[1]= m_space[1] - a.m_space[1];
 	ans.m_space[2]= m_space[2] - a.m_space[2];
+
+	ans.m_force[0]= m_force[0];
+	ans.m_force[1]= m_force[1];
+	ans.m_force[2]= m_force[2];
 
 	return ans;
 }
@@ -162,6 +218,10 @@ CPlaybackNode CPlaybackNode::operator * ( double a )
 	ans.m_space[1]= m_space[1] * a;
 	ans.m_space[2]= m_space[2] * a;
 
+	ans.m_force[0]= m_force[0];
+	ans.m_force[1]= m_force[1];
+	ans.m_force[2]= m_force[2];
+
 	return ans;
 }
 
@@ -174,6 +234,10 @@ CPlaybackNode CPlaybackNode::operator / ( double a )
 	ans.m_space[0]= m_space[0] / a;
 	ans.m_space[1]= m_space[1] / a;
 	ans.m_space[2]= m_space[2] / a;
+
+	ans.m_force[0]= m_force[0];
+	ans.m_force[1]= m_force[1];
+	ans.m_force[2]= m_force[2];
 
 	return ans;
 }
