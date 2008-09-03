@@ -48,7 +48,7 @@ namespace PlaybackLib
 		void PreProcessBlendingMaxPoints ( );
 
 		// Debug print function
-		void DebugOutput ( );
+//		void DebugOutput ( );
 
 	protected:
 
@@ -360,26 +360,26 @@ void CBSpline<T>::GetPoint ( double v, T* pointOut )
 }
 
 // Debug print function
-template <typename T>
-void CBSpline<T>::DebugOutput ( )
-{
-	OutputDebugString ( "B-Spline Control Points:\n" );
-
-	for ( int i= 0; i < m_controlPoints->size (); i++ )
-	{
-		OutputDebugString ( m_controlPoints->at(i).ToString () );
-	}
-
-	static const double gap= 0.01;
-	double max= m_controlPoints->size ()-1 - m_order + 2;
-
-	OutputDebugString ( "B-Spline Curve:\n" );
-
-	for ( double i= 0; i <= max; i+= gap )
-	{
-		T point;
-		GetPoint ( i, &point );
-
-		OutputDebugString ( point.ToString () );
-	}
-}
+//template <typename T>
+//void CBSpline<T>::DebugOutput ( )
+//{
+//	OutputDebugString ( "B-Spline Control Points:\n" );
+//
+//	for ( int i= 0; i < m_controlPoints->size (); i++ )
+//	{
+//		OutputDebugString ( m_controlPoints->at(i).ToString () );
+//	}
+//
+//	static const double gap= 0.01;
+//	double max= m_controlPoints->size ()-1 - m_order + 2;
+//
+//	OutputDebugString ( "B-Spline Curve:\n" );
+//
+//	for ( double i= 0; i <= max; i+= gap )
+//	{
+//		T point;
+//		GetPoint ( i, &point );
+//
+//		OutputDebugString ( point.ToString () );
+//	}
+//}

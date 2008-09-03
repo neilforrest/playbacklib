@@ -275,11 +275,21 @@ void CPlaybackOp::GetForce ( double* force, double* position,
 			delete n;
 		}
 
-		if ( m_bSpline->GetControlPoints ()->size () < m_bSplineOrder + 1 ||
-			 m_bSpline->GetControlPoints ()->size () < 2 )
+		// There should never be less than 2 control points
+		if ( m_bSpline->GetControlPoints ()->size () < 2 )
 		{
-				m_state= Error;
-				return;
+			m_state= Error;
+			return;
+		}
+		else
+		{
+			// Special case: Number of control points in b-spline is less than order + 1
+			if ( m_bSpline->GetControlPoints ()->size () < m_bSplineOrder + 1 )
+			{
+				// Change b-spline order to enable us to continue
+				m_bSplineOrder= m_bSpline->GetControlPoints ()->size ();
+				m_bSpline->SetOrder ( m_bSplineOrder );
+			}
 		}
 
 		// Create a knot vector and get maximum values of blending functions
