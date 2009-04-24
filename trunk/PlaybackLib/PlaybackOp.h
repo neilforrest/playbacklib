@@ -10,7 +10,7 @@
 #endif
 
 // For debugging, output actual interpolated playback path to the specified filename
-#define PLAYBACK_OP_RECORD_PATH		"PlaybackOpPath.csv"
+//#define PLAYBACK_OP_RECORD_PATH		"PlaybackOpPath.csv"
 
 namespace PlaybackLib
 {
