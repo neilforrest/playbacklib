@@ -47,10 +47,10 @@ namespace PlaybackLib
 		std::vector<COperation*>* GetAddedOperations ( );
 
 		// Set PID parameters
-		void SetPIDParameters ( CPIDControlParameters* param );
+		void SetPIDParameters ( CPIDControlParameters param );
 
 		// Get PID parameters
-		CPIDControlParameters* GetPIDParameters ( );
+		CPIDControlParameters GetPIDParameters ( );
 
 		// Has pid parameters changed since last sync
 		void SetPIDParamsChanged ( bool changed );

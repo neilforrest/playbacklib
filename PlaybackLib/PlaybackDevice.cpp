@@ -172,7 +172,7 @@ void CPlaybackDevice::Syncronise ( )
 	// If need be, re-create playback controllers with new settings
 	if ( playbackControl->IsPIDParamsChanged () )
 	{
-		m_pidParams= *( playbackControl->GetPIDParameters () );
+		m_pidParams= playbackControl->GetPIDParameters ();
 
 		PIDClean ( control_x );
 		PIDClean ( control_y );

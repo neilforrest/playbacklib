@@ -44,16 +44,16 @@ CPlaybackDevice* CPlaybackControl::GetPlaybackDevice ( )
 }
 
 // Set PID parameters
-void CPlaybackControl::SetPIDParameters ( CPIDControlParameters* param )
+void CPlaybackControl::SetPIDParameters ( CPIDControlParameters param )
 {
-	m_pidParams= *param;
+	m_pidParams= param;
 	SetPIDParamsChanged ( true );
 }
 
 // Get PID parameters
-CPIDControlParameters* CPlaybackControl::GetPIDParameters ( )
+CPIDControlParameters CPlaybackControl::GetPIDParameters ( )
 {
-	return &m_pidParams;
+	return m_pidParams;
 }
 
 // Add a new operation to the queue
