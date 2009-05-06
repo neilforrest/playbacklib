@@ -13,21 +13,6 @@ namespace PlaybackLib
 	{
 	public:
 		CPIDControlParameters(void);
-		virtual ~CPIDControlParameters(void);
-
-		// Some preset values
-		// ..................
-
-		// PHANToM Omni
-		void SetDevicePhantomOmni ( );
-
-		// PHANToM Premium
-		void SetDevicePhantomPremium ( );
-
-		// ..................
-
-		// Assignment operator
-		CPIDControlParameters operator = ( CPIDControlParameters p );
 
 		double m_p;
 		double m_i;
@@ -38,5 +23,63 @@ namespace PlaybackLib
 		double m_sat_low;
 		double m_sat_high;
 		double m_dead_zone;
+
+	};
+
+	// Some preset values
+	// ..................
+
+	// PHANToM Omni
+	class CPIDControlPhantomOmni : public CPIDControlParameters
+	{
+	public:
+		CPIDControlPhantomOmni ()
+		{
+			m_p = 0.3;
+			m_i = 0.0;
+			m_d = 15.0;
+			m_f = 0.09;
+			m_out_filter = 0.2;
+			m_gain = 0.4;
+			m_sat_low = -5.0;
+			m_sat_high = 5.0;
+			m_dead_zone = 0.0;
+		}
+	};
+
+	// PHANToM Premium
+	class CPIDControlPhantomPremium : public CPIDControlParameters
+	{
+	public:
+		CPIDControlPhantomPremium ()
+		{
+			m_p = 0.3;
+			m_i = 0.0;
+			m_d = 15.0;
+			m_f = 0.09;
+			m_out_filter = 0.2;
+			m_gain = 0.3;
+			m_sat_low = -5.0;
+			m_sat_high = 5.0;
+			m_dead_zone = 0.0;
+		}
+	};
+
+	// Novint Falcon
+	class CPIDControlFalcon : public CPIDControlParameters
+	{
+	public:
+		CPIDControlFalcon ()
+		{
+			m_p = 0.3;
+			m_i = 0.0;
+			m_d = 15.0;
+			m_f = 0.09;
+			m_out_filter = 0.2;
+			m_gain = 0.3;
+			m_sat_low = -5.0;
+			m_sat_high = 5.0;
+			m_dead_zone = 0.0;
+		}
 	};
 }
