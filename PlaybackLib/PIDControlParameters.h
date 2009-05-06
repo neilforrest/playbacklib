@@ -30,7 +30,7 @@ namespace PlaybackLib
 	// ..................
 
 	// PHANToM Omni
-	class CPIDControlPhantomOmni : public CPIDControlParameters
+	class PB_API CPIDControlPhantomOmni : public CPIDControlParameters
 	{
 	public:
 		CPIDControlPhantomOmni ()
@@ -48,7 +48,7 @@ namespace PlaybackLib
 	};
 
 	// PHANToM Premium
-	class CPIDControlPhantomPremium : public CPIDControlParameters
+	class PB_API CPIDControlPhantomPremium : public CPIDControlParameters
 	{
 	public:
 		CPIDControlPhantomPremium ()
@@ -66,7 +66,7 @@ namespace PlaybackLib
 	};
 
 	// Novint Falcon
-	class CPIDControlFalcon : public CPIDControlParameters
+	class PB_API CPIDControlFalcon : public CPIDControlParameters
 	{
 	public:
 		CPIDControlFalcon ()
