@@ -4,7 +4,7 @@
 
 using namespace PlaybackLib;
 
-CRecordOp::CRecordOp( char* filename, double sampleRate, double resolution, bool recordForce )
+CRecordOp::CRecordOp( const char* filename, double sampleRate, double resolution, bool recordForce )
 {
 	// Open output file later
 	m_outFile= NULL;

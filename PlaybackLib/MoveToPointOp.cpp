@@ -46,7 +46,7 @@ CMoveToPointOp::CMoveToPointOp( double x, double y, double z, double speed )
 }
 
 // Create a new move to point operation to move to start/end of gesture file
-CMoveToPointOp::CMoveToPointOp( char* filename, double speed, bool start )
+CMoveToPointOp::CMoveToPointOp( const char* filename, double speed, bool start )
 {
 	// Set type of operation
 	m_type= MoveToPoint;

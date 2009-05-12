@@ -24,7 +24,7 @@ namespace PlaybackLib
 	public:
 
 		// Create a new playback operation
-		CPlaybackOp( char* filename,
+		CPlaybackOp( const char* filename,
 					 int bSplineOrder= 3 
 				   );
 

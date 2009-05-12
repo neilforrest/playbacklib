@@ -37,7 +37,7 @@ namespace PlaybackLib
 		{
 			m_p = 0.3;
 			m_i = 0.0;
-			m_d = 15.0;
+			m_d = 5.0;	// was 15, but caused vibrations in H3D version
 			m_f = 0.09;
 			m_out_filter = 0.2;
 			m_gain = 0.4;
@@ -71,7 +71,7 @@ namespace PlaybackLib
 	public:
 		CPIDControlFalcon ()
 		{
-			m_p = 0.3;
+			m_p = 1.7;
 			m_i = 0.0;
 			m_d = 15.0;
 			m_f = 0.09;

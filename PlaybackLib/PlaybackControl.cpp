@@ -72,7 +72,7 @@ CMoveToPointOp* CPlaybackControl::AddMoveToPointOp ( double x, double y, double 
 }
 
 // Create and add a move to point operation to the queue
-CMoveToPointOp* CPlaybackControl::AddMoveToPointOp ( char* filename, double speed )
+CMoveToPointOp* CPlaybackControl::AddMoveToPointOp ( const char* filename, double speed )
 {
 	CMoveToPointOp* op= new CMoveToPointOp ( filename, speed );
 
@@ -84,7 +84,7 @@ CMoveToPointOp* CPlaybackControl::AddMoveToPointOp ( char* filename, double spee
 }
 
 // Create and add a record operation to the queue
-CRecordOp* CPlaybackControl::AddRecordOp ( char* filename, double sampleRate, double resolution )
+CRecordOp* CPlaybackControl::AddRecordOp ( const char* filename, double sampleRate, double resolution )
 {
 	CRecordOp* op= new CRecordOp  ( filename, sampleRate, resolution );
 
@@ -94,7 +94,7 @@ CRecordOp* CPlaybackControl::AddRecordOp ( char* filename, double sampleRate, do
 }
 
 // Create and add a playback operation to the queue
-CPlaybackOp* CPlaybackControl::AddPlaybackOp ( char* filename, int bSplineOrder )
+CPlaybackOp* CPlaybackControl::AddPlaybackOp ( const char* filename, int bSplineOrder )
 {
 	CPlaybackOp* op= new CPlaybackOp  ( filename, bSplineOrder );
 	//op->SetHoldAtEnd ( true );

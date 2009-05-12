@@ -29,13 +29,13 @@ namespace PlaybackLib
 		CMoveToPointOp* AddMoveToPointOp ( double x, double y, double z, double speed );
 
 		// Create and add a move to point operation to the queue
-		CMoveToPointOp* AddMoveToPointOp ( char* filename, double speed );
+		CMoveToPointOp* AddMoveToPointOp ( const char* filename, double speed );
 
 		// Create and add a record operation to the queue
-		CRecordOp* AddRecordOp ( char* filename, double sampleRate, double resolution );
+		CRecordOp* AddRecordOp ( const char* filename, double sampleRate, double resolution );
 
 		// Create and add a playback operation to the queue
-		CPlaybackOp* AddPlaybackOp ( char* filename, int bSplineOrder= 3 );
+		CPlaybackOp* AddPlaybackOp ( const char* filename, int bSplineOrder= 3 );
 
 		// Create a new device object that is controlled by this control object
 		CPlaybackDevice* GetPlaybackDevice ( );
