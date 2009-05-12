@@ -4,7 +4,7 @@
 
 using namespace PlaybackLib;
 
-CPlaybackOp::CPlaybackOp( char* filename, int bSplineOrder )
+CPlaybackOp::CPlaybackOp( const char* filename, int bSplineOrder )
 {
 	// Last known playback time (sec)
 	m_playbackTime= 0.0;

@@ -20,7 +20,7 @@ namespace PlaybackLib
 	public:
 
 		// Create a new record operation
-		CRecordOp( char* filename,				// Output filename
+		CRecordOp( const char* filename,				// Output filename
 				   double sampleRate= 250,		// Samples per second (range > 0 and <= 1000)
 				   double resolution= 0.0,		// Minimum change in position to record (range >= 0)
 				   bool recordForce= false		// Record force data

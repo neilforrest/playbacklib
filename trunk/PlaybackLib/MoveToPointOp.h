@@ -17,7 +17,7 @@ namespace PlaybackLib
 		CMoveToPointOp( double x, double y, double z, double speed );
 
 		// Create a new move to point operation to move to start/end of gesture file
-		CMoveToPointOp( char* filename, double speed, bool start= true );
+		CMoveToPointOp( const char* filename, double speed, bool start= true );
 
 		virtual ~CMoveToPointOp(void);
 
