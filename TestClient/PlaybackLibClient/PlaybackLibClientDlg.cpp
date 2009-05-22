@@ -91,9 +91,7 @@ CPlaybackLibClientDlg::CPlaybackLibClientDlg(CWnd* pParent /*=NULL*/)
 	playbackDevice= playbackControl->GetPlaybackDevice ( );
 
 	// Set PID parameters
-	CPIDControlParameters params;
-	params.SetDevicePhantomOmni ();
-	playbackControl->SetPIDParameters ( &params );
+	playbackControl->SetPIDParameters ( CPIDControlPhantomOmni() );
 
 	// Syncronise control and device every... (ms)
 	m_syncEveryMs= 250;
@@ -191,7 +189,7 @@ BOOL CPlaybackLibClientDlg::OnInitDialog()
 	sprintf ( s, "%.0f", m_syncEveryMs );
 	m_syncEvery.SetWindowText ( s );
 
-	m_playbackFilename.SetWindowText ( "Square.csv" );
+	m_playbackFilename.SetWindowText ( "Test.csv" );
 	m_recordFilename.SetWindowText ( "Test.csv" );
 	m_sampleRate.SetWindowText ( "25" );
 	m_resolution.SetWindowText ( "0.0" );
