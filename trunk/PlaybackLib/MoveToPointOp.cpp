@@ -99,8 +99,6 @@ CMoveToPointOp::~CMoveToPointOp(void)
 // Deep copy operator
 CMoveToPointOp CMoveToPointOp::operator = ( CMoveToPointOp op )
 {
-	OutputDebugString ( "CMoveToPointOp\n" );
-
 	if ( &op == this ) return *this;
 
 	// Call super class operator
@@ -133,6 +131,7 @@ CMoveToPointOp CMoveToPointOp::operator = ( CMoveToPointOp op )
 
 	// Advance to next bead tolerance
 	m_tolerance= op.m_tolerance;
+	m_useTolerance= op.m_useTolerance;
 
 	// Do first time initialisation?
 	m_firstTime= op.m_firstTime;
