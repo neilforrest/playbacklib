@@ -57,6 +57,9 @@ namespace PlaybackLib
 		// Is the operation currently paused due to user resistance
 		bool IsPaused ();
 
+		// Deep copy operator
+		CMoveToPointOp operator = ( CMoveToPointOp op );
+
 		void Copy ( COperation* op );
 
 		std::string ToString ( );
