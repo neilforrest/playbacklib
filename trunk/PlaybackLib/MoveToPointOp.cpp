@@ -96,62 +96,9 @@ CMoveToPointOp::~CMoveToPointOp(void)
 {
 }
 
-// Deep copy operator
-CMoveToPointOp CMoveToPointOp::operator = ( CMoveToPointOp op )
-{
-	OutputDebugString ( "CMoveToPointOp\n" );
-
-	if ( &op == this ) return *this;
-
-	// Call super class operator
-	COperation::operator=(op);
-
-	// Move to point (x,y,z)
-	m_toPoint[0]= op.m_toPoint[0];
-	m_toPoint[1]= op.m_toPoint[1];
-	m_toPoint[2]= op.m_toPoint[2];
-
-	// Speed of move (units per ms)
-	m_speed= op.m_speed;
-
-	// Start position
-	m_sourcePoint[0]= op.m_sourcePoint[0];
-	m_sourcePoint[1]= op.m_sourcePoint[1];
-	m_sourcePoint[2]= op.m_sourcePoint[2];
-
-	// Current bead position
-	m_beadPos[0]= op.m_beadPos[0];
-	m_beadPos[1]= op.m_beadPos[1];
-	m_beadPos[2]= op.m_beadPos[2];
-
-	// Start time
-	m_startCount= op.m_startCount;
-	m_freq= op.m_freq;
-
-	// Cache distance from start to end of movement
-	m_moveToDist= op.m_moveToDist;
-
-	// Advance to next bead tolerance
-	m_tolerance= op.m_tolerance;
-
-	// Do first time initialisation?
-	m_firstTime= op.m_firstTime;
-
-	// Holding at end of playback
-	m_holdAtEnd= op.m_holdAtEnd;
-	m_holdingAtEnd= op.m_holdingAtEnd;
-
-	char s[256];
-	sprintf ( s, "Copy from %d to %d. Hold at end %s.\n", &op, this, m_holdingAtEnd ? "true" : "false" );
-	OutputDebugString ( s );
-
-	return *this;
-}
-
 void CMoveToPointOp::Copy ( COperation* op )
 {
 	CMoveToPointOp* opSub= (CMoveToPointOp*)op;
-	OutputDebugString ( "CMoveToPointOp::CopyIn ( )\n" );
 
 	// Call super
 	COperation::Copy(op);
@@ -183,6 +130,7 @@ void CMoveToPointOp::Copy ( COperation* op )
 
 	// Advance to next bead tolerance
 	m_tolerance= opSub->m_tolerance;
+	m_useTolerance= opSub->m_useTolerance;
 
 	// Do first time initialisation?
 	m_firstTime= opSub->m_firstTime;

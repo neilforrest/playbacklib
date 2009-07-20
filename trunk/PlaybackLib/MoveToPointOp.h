@@ -21,9 +21,6 @@ namespace PlaybackLib
 
 		virtual ~CMoveToPointOp(void);
 
-		// Deep copy operator
-		CMoveToPointOp operator = ( CMoveToPointOp op );
-
 		// Create a new object of this type
 		virtual COperation* Clone ( );
 
