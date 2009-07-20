@@ -16,6 +16,8 @@ CMoveToPointOp::CMoveToPointOp( double x, double y, double z, double speed )
 	m_toPoint[0]= x;
 	m_toPoint[1]= y;
 	m_toPoint[2]= z;
+
+	m_speed= speed;
 }
 
 // Create a new move to point operation to move to start/end of gesture file
