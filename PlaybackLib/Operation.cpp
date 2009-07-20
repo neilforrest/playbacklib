@@ -50,8 +50,6 @@ void COperation::GetLastSetPoint ( double* point )
 
 void COperation::Copy ( COperation* op )
 {
-	OutputDebugString ( "COperation::CopyIn\n" );
-
 	m_type= op->m_type;		// Type of this operation
 	m_state= op->m_state;	// Current state of this operation
 }

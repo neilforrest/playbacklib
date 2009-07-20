@@ -11,58 +11,19 @@ const double smallDouble= 0.00001;
 
 CMoveToPointOp::CMoveToPointOp( double x, double y, double z, double speed )
 {
-	// Set type of operation
-	m_type= MoveToPoint;
+	Init ();
 
-	// Default parameters
 	m_toPoint[0]= x;
 	m_toPoint[1]= y;
 	m_toPoint[2]= z;
-
-	m_speed= speed;
-
-	// Tolerance defaults
-	m_tolerance= 15.0;
-	m_useTolerance= true;
-
-	// The playback is currently paused
-	m_paused= false;
-
-	// Total duration that playback has been paused for
-	m_totalPauseDuration= 0.0;
-
-	// Do first time initialisation?
-	m_firstTime= true;
-
-	// Holding at end of playback
-	m_holdingAtEnd= false;
-
-	// Should hold at end of playback and wait for user to cancel
-	m_holdAtEnd= false;
-
-	// Use a previous set point as the start of our trajectory instead of
-	// current device position. Use when continuous control is required.
-	m_usePreviousSetPoint= false;
 }
 
 // Create a new move to point operation to move to start/end of gesture file
 CMoveToPointOp::CMoveToPointOp( const char* filename, double speed, bool start )
 {
-	// Set type of operation
-	m_type= MoveToPoint;
+	Init ();
 
 	m_speed= speed;
-
-	m_tolerance= 15.0;
-
-	// Do first time initialisation?
-	m_firstTime= true;
-
-	// Holding at end of playback
-	m_holdingAtEnd= false;
-
-	// Should hold at end of playback and wait for user to cancel
-	m_holdAtEnd= false;
 
 	// Get destination point from file
 	FILE* f= fopen ( filename, "r" );
@@ -96,51 +57,63 @@ CMoveToPointOp::~CMoveToPointOp(void)
 {
 }
 
-// Deep copy operator
-CMoveToPointOp CMoveToPointOp::operator = ( CMoveToPointOp op )
+// Common initialisation
+void CMoveToPointOp::Init ()
 {
-	if ( &op == this ) return *this;
-
-	// Call super class operator
-	COperation::operator=(op);
-
-	// Move to point (x,y,z)
-	m_toPoint[0]= op.m_toPoint[0];
-	m_toPoint[1]= op.m_toPoint[1];
-	m_toPoint[2]= op.m_toPoint[2];
-
-	// Speed of move (units per ms)
-	m_speed= op.m_speed;
-
 	// Start position
-	m_sourcePoint[0]= op.m_sourcePoint[0];
-	m_sourcePoint[1]= op.m_sourcePoint[1];
-	m_sourcePoint[2]= op.m_sourcePoint[2];
+	m_sourcePoint[0]= 0.0f;
+	m_sourcePoint[1]= 0.0f;
+	m_sourcePoint[2]= 0.0f;
 
 	// Current bead position
-	m_beadPos[0]= op.m_beadPos[0];
-	m_beadPos[1]= op.m_beadPos[1];
-	m_beadPos[2]= op.m_beadPos[2];
+	m_beadPos[0]= 0.0f;
+	m_beadPos[1]= 0.0f;
+	m_beadPos[2]= 0.0f;
 
-	// Start time
-	m_startCount= op.m_startCount;
-	m_freq= op.m_freq;
+	// Use a previous set point as the start of our trajectory instead of
+	// current device position. Use when continuous control is required.
+	m_previousSetPoint[0]= 0.0f;
+	m_previousSetPoint[1]= 0.0f;
+	m_previousSetPoint[2]= 0.0f;
+
+	// The desired time, calculated from the speed to get to the toPoint from sourcePoint
+	m_totalTime= 0.0;
 
 	// Cache distance from start to end of movement
-	m_moveToDist= op.m_moveToDist;
+	m_moveToDist= 0.0;
 
-	// Advance to next bead tolerance
-	m_tolerance= op.m_tolerance;
-	m_useTolerance= op.m_useTolerance;
+	// Set type of operation
+	m_type= MoveToPoint;
+
+	// Default parameters
+	m_toPoint[0]= 0.0f;
+	m_toPoint[1]= 0.0f;
+	m_toPoint[2]= 0.0f;
+
+	m_speed= 1.0;
+
+	// Tolerance defaults
+	m_tolerance= 15.0;
+	m_useTolerance= true;
+
+	// The playback is currently paused
+	m_paused= false;
+
+	// Total duration that playback has been paused for
+	m_totalPauseDuration= 0.0;
 
 	// Do first time initialisation?
-	m_firstTime= op.m_firstTime;
+	m_firstTime= true;
 
 	// Holding at end of playback
-	m_holdAtEnd= op.m_holdAtEnd;
-	m_holdingAtEnd= op.m_holdingAtEnd;
+	m_holdingAtEnd= false;
 
-	return *this;
+	// Should hold at end of playback and wait for user to cancel
+	m_holdAtEnd= false;
+
+	// Use a previous set point as the start of our trajectory instead of
+	// current device position. Use when continuous control is required.
+	m_usePreviousSetPoint= false;
 }
 
 void CMoveToPointOp::Copy ( COperation* op )
@@ -333,9 +306,6 @@ void CMoveToPointOp::SetLastSetPoint ( double* point )
 // Is currently holding user at end of playback, waiting for cancel
 bool CMoveToPointOp::IsHoldingAtEnd ( )
 {
-	char s[256];
-	sprintf ( s, "Holding at end? %d ??? %s\n", this, m_holdingAtEnd ? "true" : "false" );
-	OutputDebugString ( s );
 	return m_holdingAtEnd;
 }
 
@@ -401,7 +371,6 @@ void CMoveToPointOp::StartPause ()
 	{
 		QueryPerformanceCounter((LARGE_INTEGER*)&m_pauseStartCount);
 		m_paused= true;
-		OutputDebugString ( "Pause\n" );
 	}
 }
 
