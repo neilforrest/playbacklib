@@ -43,9 +43,6 @@ void CGarbageCollector::Collect ( )
 	{
 		for ( int i= 0; i < m_garbage.size (); i++ )
 		{
-			char s[256];
-			sprintf ( s, "Deallocated: %d\n", this );
-			OutputDebugString ( s );
 			delete m_garbage.at ( i );
 		}
 

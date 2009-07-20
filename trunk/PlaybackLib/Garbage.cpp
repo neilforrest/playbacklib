@@ -8,17 +8,10 @@ CGarbage::CGarbage(void)
 {
 	// Number of references to this object
 	m_referenceCount= 0;
-
-	char s[256];
-	sprintf ( s, "Allocated: %d\n", this );
-	OutputDebugString ( s );
 }
 
 CGarbage::~CGarbage(void)
 {
-	char s[256];
-	sprintf ( s, "Deallocated: %d\n", this );
-	//OutputDebugString ( s );
 }
 
 	// Add a reference to this object
