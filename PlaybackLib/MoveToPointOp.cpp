@@ -140,10 +140,6 @@ CMoveToPointOp CMoveToPointOp::operator = ( CMoveToPointOp op )
 	m_holdAtEnd= op.m_holdAtEnd;
 	m_holdingAtEnd= op.m_holdingAtEnd;
 
-	char s[256];
-	sprintf ( s, "Copy from %d to %d. Hold at end %s.\n", &op, this, m_holdingAtEnd ? "true" : "false" );
-	OutputDebugString ( s );
-
 	return *this;
 }
 
