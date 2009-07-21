@@ -88,13 +88,13 @@ namespace PlaybackLib
 		// Get last playback node
 		CPlaybackNode GetLastPlaybackNode ();
 
-	protected:
-
 		// Begin a pause in playback
 		void StartPause ();
 
 		// End the current pause in playback
 		void EndPause ();
+
+	protected:
 
 		// Read the value of the last time-stamp in the playback file
 		CPlaybackNode ReadLastNode ( FILE* file );

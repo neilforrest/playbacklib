@@ -57,6 +57,12 @@ namespace PlaybackLib
 		// Is the operation currently paused due to user resistance
 		bool IsPaused ();
 
+		// Begin a pause in playback
+		void StartPause ();
+
+		// End the current pause in playback
+		void EndPause ();
+
 		void Copy ( COperation* op );
 
 		std::string ToString ( );
@@ -65,12 +71,6 @@ namespace PlaybackLib
 
 		// Common initialisation
 		void Init ();
-
-		// Begin a pause in playback
-		void StartPause ();
-
-		// End the current pause in playback
-		void EndPause ();
 
 		// Linearly interpolate between two points, r= 0 to 1
 		void InterpolateLinear ( double* a, double* b, double r,
