@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 #ifdef PB_IMPORT
 #define PB_API __declspec(dllimport)
@@ -38,10 +39,10 @@ namespace PlaybackLib
 		bool IsUseForceData ();
 
 		// Get string representation
-		CString ToString ( );
+		std::string ToString ( );
 
 		// Populate from string representation
-		bool FromString ( CString str );
+		bool FromString ( std::string& str );
 
 		// Get next playback node from file
 		void GetNode ( FILE* f, bool* eof, bool* error );

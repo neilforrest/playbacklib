@@ -33,7 +33,7 @@ CRecordOp::~CRecordOp(void)
 		if ( m_gap )
 		{
 			// Save remebered node before continuing
-			fprintf ( m_outFile, m_lastNode.ToString ( ) );
+			fprintf ( m_outFile, m_lastNode.ToString ( ).c_str() );
 
 			m_gap= false;
 		}
@@ -81,7 +81,7 @@ void CRecordOp::Copy ( COperation* op )
 // Create a new object of this type
 COperation* CRecordOp::Clone ( )
 {
-	CRecordOp* clone= new CRecordOp ( m_outFilename.GetBuffer (), m_sampleRate, m_resolution );
+	CRecordOp* clone= new CRecordOp ( m_outFilename.c_str(), m_sampleRate, m_resolution );
 
 	*(clone)= *(this);
 
@@ -96,7 +96,7 @@ void CRecordOp::GetForce ( double* force, double* position,
 	if ( m_firstTime )
 	{
 		// Open output file
-		m_outFile= fopen ( m_outFilename, "w" );
+		m_outFile= fopen ( m_outFilename.c_str(), "w" );
 
 #ifdef RECORD_OP_RECORD_PATH
 	// For debugging, record the actual pathway at max rate/resolution available
@@ -128,7 +128,7 @@ void CRecordOp::GetForce ( double* force, double* position,
 
 		m_lastNode.m_time= 0;
 
-		fprintf ( m_outFile, m_lastNode.ToString ( ) );
+		fprintf ( m_outFile, m_lastNode.ToString ().c_str() );
 
 		// Don't exec again
 		m_firstTime= false;
@@ -162,7 +162,7 @@ void CRecordOp::GetForce ( double* force, double* position,
 			if ( m_gap )
 			{
 				// Save remebered node before continuing
-				fprintf ( m_outFile, m_lastNode.ToString ( ) );
+				fprintf ( m_outFile, m_lastNode.ToString ().c_str() );
 
 				m_gap= false;
 			}
@@ -178,7 +178,7 @@ void CRecordOp::GetForce ( double* force, double* position,
 
 			m_lastNode.m_time= elapsed;
 
-			fprintf ( m_outFile, m_lastNode.ToString ( ) );
+			fprintf ( m_outFile, m_lastNode.ToString ().c_str() );
 		}
 		else
 		{

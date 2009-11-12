@@ -1,7 +1,10 @@
 #include "StdAfx.h"
 #include "PlaybackNode.h"
 #include "Parse.h"
+#include <sstream>
+#include <iostream>
 
+using namespace std;
 using namespace PlaybackLib;
 
 CPlaybackNode::CPlaybackNode(void)
@@ -35,61 +38,62 @@ bool CPlaybackNode::IsUseForceData ()
 }
 
 // Get string representation
-CString CPlaybackNode::ToString ( )
+string CPlaybackNode::ToString ( )
 {
-	CString str;
+	stringstream ss;
 
 	if ( m_useForce )
 	{
-		str.Format ( "%f, %f, %f, %f, %f, %f, %f\n", m_time, m_space[0], m_space[1], m_space[2],
-													 m_force[0], m_force[1], m_force[2] );
+		ss << m_time << ", " << 
+			  m_space[0] << ", " << 
+			  m_space[1] << ", " << 
+			  m_space[2] << ", " << 
+			  m_force[0] << ", " << 
+			  m_force[1] << ", " << 
+			  m_force[2] << endl;
 	}
 	else
 	{
-		str.Format ( "%f, %f, %f, %f\n", m_time, m_space[0], m_space[1], m_space[2] );
+		ss << m_time << ", " << 
+			  m_space[0] << ", " << 
+			  m_space[1] << ", " << 
+			  m_space[2] << endl;
 	}
 
-	return str;
+	return ss.str();
 }
 
 // Populate from string representation
-bool CPlaybackNode::FromString ( CString str )
+bool CPlaybackNode::FromString ( string& str )
 {
-	// Tokenise on , 
-	CString token;
-	int curPos= 0;
+	vector<string> tokens= tokenize ( str, ", " );
 
-	float data[7];
-
-	// Get first token
-	token= str.Tokenize(", ",curPos);
-	
-	int dataCount= 0;
-	if ( m_useForce ) dataCount= 7;
-	else			  dataCount= 4;
-
-	for ( int i= 0; i < dataCount; i++ )
+	if ( tokens.size() >= 4 )
 	{
-		if ( !StringToFloat ( token.GetBuffer (), &data[i] ) )
-		{
-			return false;
-		}
+		istringstream time(tokens[0]);
+		time >> m_time;
 
-		// Get next token
-		token= str.Tokenize(", ",curPos);
+		istringstream spacex(tokens[1]);
+		spacex >> m_space[0];
+
+		istringstream spacey(tokens[2]);
+		spacey >> m_space[1];
+
+		istringstream spacez(tokens[3]);
+		spacez >> m_space[2];
 	}
 
-	m_time= data[0];
+	if ( m_useForce && tokens.size() >= 7 )
+	{
+		istringstream forcex(tokens[4]);
+		forcex >> m_force[0];
 
-	m_space[0]= data[1];
-	m_space[1]= data[2];
-	m_space[2]= data[3];
+		istringstream forcey(tokens[5]);
+		forcey >> m_force[1];
 
-	m_force[0]= data[4];
-	m_force[1]= data[5];
-	m_force[2]= data[6];
-
-	//MessageBox ( 0, ToString (), "FromString()", MB_OK );
+		istringstream forcez(tokens[6]);
+		forcez >> m_force[2];
+	}
 
 	return true;
 }
@@ -121,7 +125,7 @@ void CPlaybackNode::GetNode ( FILE* f, bool* eof, bool* error )
 	if ( str[last] =='\n' ) str[last]= '\0';
 
 	// Parse and create node
-	*error= !FromString ( CString ( str ) );
+	*error= !FromString ( string ( str ) );
 }
 
 // Assignment Operator

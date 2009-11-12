@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='PlaybackLibEffect.x3d'/>
+    <meta name='description' content='Demonstration of PlaybackLibEffect and integration with PlaybackLib.'/>
+    <meta name='author' content='Neil Forrest 2009'/>
+  </head>
+  
+  <Scene>
+
+    <Viewpoint position='0 0 0.6' />
+
+    <Transform translation="-0.25 0.2 0">
+        <Shape>
+          <Appearance>
+            <Material diffuseColor="1 1 1" />
+          </Appearance>
+          <Text DEF="Text" string='"Keys:"" c: Move device to center"" r: Start recording"" p: Start playback"" q: Stop recording/Release device"' solid="true">
+            <FontStyle justify='"BEGIN" "BEGIN"' size="0.02" spacing="1" />
+          </Text>
+        </Shape>
+    </Transform>
+    
+    <PlaybackLibEffect DEF="PB" hapticDevice='0' />
+
+    <PythonScript DEF="PS" url="PlaybackLibEffect.py">
+      <PlaybackLibEffect USE="PB" containerField="references" />
+    </PythonScript>
+
+    <KeySensor DEF='KS' enabled='true' />
+    <ROUTE fromNode='KS' fromField='keyPress' toNode='PS' toField='keyboardHandler' />
+    
+  </Scene>
+</X3D>
