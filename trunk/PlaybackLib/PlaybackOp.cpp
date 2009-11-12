@@ -2,6 +2,7 @@
 #include "PlaybackOp.h"
 #include <math.h>
 
+using namespace std;
 using namespace PlaybackLib;
 
 CPlaybackOp::CPlaybackOp( const char* filename, int bSplineOrder )
@@ -10,7 +11,7 @@ CPlaybackOp::CPlaybackOp( const char* filename, int bSplineOrder )
 	m_playbackTime= 0.0;
 
 	m_inFile= NULL;
-	m_inFilename= CString ( filename );
+	m_inFilename= string ( filename );
 
 	// Do first time initialisation?
 	m_firstTime= true;
@@ -200,7 +201,7 @@ void CPlaybackOp::Copy ( COperation* op )
 // Create a new object of this type
 COperation* CPlaybackOp::Clone ( )
 {
-	CPlaybackOp* clone= new CPlaybackOp ( m_inFilename.GetBuffer () );
+	CPlaybackOp* clone= new CPlaybackOp ( m_inFilename.c_str() );
 
 	*(clone)= *(this);
 
@@ -227,7 +228,7 @@ void CPlaybackOp::GetForce ( double* force, double* position,
 		m_bSpline->SetOrder ( m_bSplineOrder );
 
 		// Open input file
-		m_inFile= fopen ( m_inFilename.GetString (), "r" );
+		m_inFile= fopen ( m_inFilename.c_str(), "r" );
 
 		if ( m_inFile == NULL )
 		{

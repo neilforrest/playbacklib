@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "operation.h"
 #include "PlaybackNode.h"
 #include "BSpline.h"
@@ -118,7 +119,7 @@ namespace PlaybackLib
 		FILE* m_inFile;
 
 		// Input filename
-		CString m_inFilename;
+		std::string m_inFilename;
 
 		// Start time
 		LARGE_INTEGER m_startCount;

@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "operation.h"
 #include "PlaybackNode.h"
 
@@ -61,7 +62,7 @@ namespace PlaybackLib
 		double m_resolution;
 
 		// Output filename
-		CString m_outFilename;
+		std::string m_outFilename;
 
 		// Sample rate Hz
 		double m_sampleRate;

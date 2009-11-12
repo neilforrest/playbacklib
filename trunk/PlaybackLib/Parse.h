@@ -1,10 +1,9 @@
+#include <vector>
+#include <string>
+
 namespace PlaybackLib
 {
 
-	// Convert string to float
-	bool StringToFloat ( char* str, float* flt );
-
-	// Convert string to int
-	bool StringToInt ( char* str, int* integer );
+	std::vector<std::string> tokenize(const std::string & str, const std::string & delim);
 
 }
