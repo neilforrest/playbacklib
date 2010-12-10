@@ -102,7 +102,7 @@ SET( PlaybackEffect_COMPILE_FLAGS "" )
 IF ( BUILD_AS_LIB )
 
 	# make sure symbols are exported by defining some symbols on the command line
-	SET( PlaybackEffect_COMPILE_FLAGS "${PlaybackEffect_COMPILE_FLAGS} -DPlaybackEffect_EXPORTS -DBUILD_AS_LIBRARY" )
+	SET( PlaybackEffect_COMPILE_FLAGS "${PlaybackEffect_COMPILE_FLAGS} -DPLAYBACKEFFECT_EXPORTS -DBUILD_AS_LIBRARY" )
 
 	ADD_LIBRARY ( PlaybackEffect SHARED ${PlaybackEffect_SRCS})
 
