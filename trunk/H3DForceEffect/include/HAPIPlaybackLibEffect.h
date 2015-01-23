@@ -14,14 +14,14 @@ namespace HAPI
 	public:
 
 		/// Constructor
-		HAPIPlaybackLibEffect ();
+		HAPIPlaybackLibEffect ( CPIDControlParameters& pidParams= CPIDControlFalcon() );
 
 		/// Calculate the forces to send to the device
 		virtual EffectOutput calculateForces ( const EffectInput& input );
 
 		/// Syncronise graphic/control thread and haptic thread
 		/// Call from graphic/control thread, blocks until syncronised
-		void syncronise ();
+		void syncronise ( HAPIHapticsDevice& device );
 
 		/// Return the PlaybaclLib CPlaybackControl object to control the playback and recording
 		CPlaybackControl* getPlaybackControl ();
