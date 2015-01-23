@@ -42,12 +42,17 @@ namespace H3D
 		};
 
 		/// Constructor
-		PlaybackLibEffect(		Inst< SFNode			>  _metadata	= 0,
+		PlaybackLibEffect(		Inst< SFNode >  _metadata	= 0,
 								Inst < MoveToPointField > _moveToPoint	= 0,
-								Inst < RecordToField	> _recordTo		= 0,
-								Inst < PlayFromField	> _playFrom		= 0,
-								Inst < CancelField		> _cancel		= 0,
-								Inst < SFInt32			> _hapticDevice	= 0 );
+								Inst < RecordToField > _recordTo		= 0,
+								Inst < PlayFromField > _playFrom		= 0,
+                Inst < SFBool > _holdAtEnd = 0,
+								Inst < CancelField > _cancel		= 0,
+								Inst < SFInt32 > _hapticDevice	= 0,
+                Inst < SFBool > _complete = 0 );
+
+    /// Initialize the node
+    virtual void initialize ();
 
 		/// Override traverseSG to add the HAPI force effect
 		virtual void traverseSG( TraverseInfo &ti );
@@ -64,11 +69,19 @@ namespace H3D
 		/// When a new value is recieved a record operation is added to the queue.
 		auto_ptr < PlayFromField > playFrom;
 
+    /// If true then the device will be held at the last position of the previous playback
+    /// or move to operation until cancel is set to true
+    auto_ptr < SFBool > holdAtEnd;
+
 		/// The index of the haptic device which is used with this effect
 		auto_ptr < SFInt32 > hapticDevice;
 
 		/// Sending a value of true requests that all playback operations in queue are cancelled
 		auto_ptr < CancelField > cancel;
+
+    /// A value of true is sent each time an operation completes
+    /// I.e. when the devices finishes the requested playback operation
+    auto_ptr < SFBool > complete;
 
 		/// Add this node to the H3DNodeDatabase system.
 		static H3DNodeDatabase database;
@@ -78,8 +91,17 @@ namespace H3D
 		/// Cancel all operations
 		void cancelAll ();
 
+    void syncronise();
+
 		/// HAPI force effect
 		AutoRef < HAPI::HAPIPlaybackLibEffect > hapiPlaybackLibEffect;
+
+    /// The current operation
+    COperation* operation;
+
+    /// Reference to haptics device using force effect
+    /// Work around for problems with synchronousHapticCB()
+    H3DHapticsDevice* device;
 	};
 
 }

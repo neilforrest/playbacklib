@@ -5,13 +5,13 @@ using namespace HAPI;
 using namespace PlaybackLib;
 
 // Constructor
-HAPIPlaybackLibEffect::HAPIPlaybackLibEffect ()
+HAPIPlaybackLibEffect::HAPIPlaybackLibEffect ( CPIDControlParameters& pidParams )
 {
 	playbackControl.reset ( new PlaybackLib::CPlaybackControl() );
 
 	// Set PID parameters appropriate for the haptic device
 	// TODO: Set this automatically based on H3D device type
-	playbackControl->SetPIDParameters ( CPIDControlFalcon() );
+	playbackControl->SetPIDParameters ( pidParams );
 }
 
 // Calculate the forces to send to the device
@@ -30,9 +30,13 @@ HAPIForceEffect::EffectOutput HAPIPlaybackLibEffect::calculateForces ( const HAP
 
 // Syncronise graphic/control thread and haptic thread
 // Call from graphic/control thread, blocks until syncronised
-void HAPIPlaybackLibEffect::syncronise ()
+void HAPIPlaybackLibEffect::syncronise ( HAPIHapticsDevice& device )
 {
-	H3DUtil::HapticThread::synchronousHapticCB ( HAPIPlaybackLibEffect::syncroniseCB, this );
+  // Disabled: Causing random crashes (H3D2.1.1/PDD 4.2.49)
+	//H3DUtil::HapticThread::synchronousHapticCB ( HAPIPlaybackLibEffect::syncroniseCB, this );
+  if ( H3DUtil::PeriodicThreadBase* t= device.getThread() ) {
+    t->synchronousCallback ( HAPIPlaybackLibEffect::syncroniseCB, this );
+  }
 }
 
 // Return the PlaybaclLib CPlaybackControl object to control the playback and recording
